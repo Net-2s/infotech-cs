@@ -56,23 +56,51 @@ export class SellerDashboardComponent implements OnInit {
     this.isLoading.set(true);
 
     // Charger les listings du vendeur
+    console.log('🔍 Chargement des listings vendeur...');
     this.listingService.getMyListings().subscribe({
       next: (listings) => {
-        this.myListings.set(listings);
+        console.log('✅ Listings reçus:', listings);
+        console.log('📊 Nombre de listings:', listings?.length);
         
-        // Calculer les statistiques réelles à partir des listings
-        const stats = {
-          totalListings: listings.length,
-          totalSales: 0, // TODO: À implémenter côté backend
-          totalRevenue: 0, // TODO: À implémenter côté backend
-          averageRating: 0 // TODO: À implémenter côté backend
-        };
+        // Vérifier si listings est bien un tableau
+        if (!Array.isArray(listings)) {
+          console.error('❌ La réponse n\'est pas un tableau:', listings);
+          this.myListings.set([]);
+          this.stats.set({
+            totalListings: 0,
+            totalSales: 0,
+            totalRevenue: 0,
+            averageRating: 0
+          });
+        } else {
+          this.myListings.set(listings);
+          
+          // Calculer les statistiques réelles à partir des listings
+          const stats = {
+            totalListings: listings.length,
+            totalSales: 0, // TODO: À implémenter côté backend
+            totalRevenue: 0, // TODO: À implémenter côté backend
+            averageRating: 0 // TODO: À implémenter côté backend
+          };
+          
+          this.stats.set(stats);
+        }
         
-        this.stats.set(stats);
         this.isLoading.set(false);
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des listings:', error);
+        console.error('❌ Erreur lors du chargement des listings:', error);
+        console.error('📋 Détails de l\'erreur:', error.error);
+        console.error('📍 Status:', error.status);
+        
+        // Initialiser avec des valeurs vides en cas d'erreur
+        this.myListings.set([]);
+        this.stats.set({
+          totalListings: 0,
+          totalSales: 0,
+          totalRevenue: 0,
+          averageRating: 0
+        });
         this.isLoading.set(false);
       }
     });

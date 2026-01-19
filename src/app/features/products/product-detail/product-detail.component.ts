@@ -9,17 +9,21 @@ import { ListingService } from '../../../core/services/listing.service';
 import { ListingRecommendationService, ListingScore } from '../../../core/services/listing-recommendation.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DigitalPassportService } from '../../../core/services/digital-passport.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { Product } from '../../../core/models/product.model';
 import { Review } from '../../../core/models/review.model';
 import { Listing } from '../../../core/models/listing.model';
 import { DigitalPassport } from '../../../core/models/digital-passport-backend.model';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { FooterComponent } from '../../../shared/footer/footer.component';
+import { ImageFallbackDirective } from '../../../shared/directives/image-fallback.directive';
+import { StarRatingComponent } from '../../../shared/star-rating/star-rating.component';
+import { AddReviewModalComponent } from '../../../shared/add-review-modal/add-review-modal.component';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, HeaderComponent, FooterComponent],
+  imports: [CommonModule, RouterLink, HeaderComponent, FooterComponent, ImageFallbackDirective, StarRatingComponent, AddReviewModalComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
@@ -32,6 +36,7 @@ export class ProductDetailComponent implements OnInit {
   private recommendationService = inject(ListingRecommendationService);
   private authService = inject(AuthService);
   private passportService = inject(DigitalPassportService);
+  private notificationService = inject(NotificationService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -60,7 +65,96 @@ export class ProductDetailComponent implements OnInit {
   showFeatureSidenav = signal<boolean>(false);
   currentFeature = signal<'certified' | 'warranty' | 'return' | 'delivery' | null>(null);
 
+  // Reviews
+  showAddReviewModal = signal<boolean>(false);
+  reviewsPage = signal<number>(0);
+  reviewsSize = signal<number>(5);
+
+  // Variant Selection
+  selectedVariants = signal<Record<string, string>>({});
+
   currentUser = computed(() => this.authService.currentUser());
+  
+  // Vérifie si l'utilisateur connecté a déjà laissé un avis
+  userHasReviewed = computed(() => {
+    const user = this.currentUser();
+    const reviewsList = this.reviews();
+    if (!user || reviewsList.length === 0) return false;
+    return reviewsList.some(review => review.userId === user.id);
+  });
+
+  // Detect variants from listings
+  detectedVariants = computed(() => {
+    const listingsData = this.listings();
+    if (!listingsData || listingsData.length === 0) {
+      return [];
+    }
+
+    // Extract variants from condition notes
+    const variantMap = new Map<string, Set<string>>();
+    
+    listingsData.forEach(listing => {
+      const condition = listing.conditionNote || '';
+      
+      // Detect color variants (case insensitive)
+      const colorMatch = condition.match(/couleur[:\s]+([\w\s-]+)/i) || 
+                        condition.match(/color[:\s]+([\w\s-]+)/i);
+      if (colorMatch) {
+        if (!variantMap.has('color')) {
+          variantMap.set('color', new Set());
+        }
+        variantMap.get('color')!.add(colorMatch[1].trim());
+      }
+
+      // Detect storage variants
+      const storageMatch = condition.match(/(\d+\s*(?:GB|TB|Go|To))/i);
+      if (storageMatch) {
+        if (!variantMap.has('storage')) {
+          variantMap.set('storage', new Set());
+        }
+        variantMap.get('storage')!.add(storageMatch[1].toUpperCase());
+      }
+
+      // Detect size variants
+      const sizeMatch = condition.match(/taille[:\s]+([\w\s-]+)/i) ||
+                       condition.match(/size[:\s]+([\w\s-]+)/i);
+      if (sizeMatch) {
+        if (!variantMap.has('size')) {
+          variantMap.set('size', new Set());
+        }
+        variantMap.get('size')!.add(sizeMatch[1].trim());
+      }
+    });
+
+    // Convert to array format
+    const variants: Array<{ type: string; label: string; values: string[] }> = [];
+    
+    if (variantMap.has('color') && variantMap.get('color')!.size > 1) {
+      variants.push({
+        type: 'color',
+        label: 'Couleur',
+        values: Array.from(variantMap.get('color')!)
+      });
+    }
+    
+    if (variantMap.has('storage') && variantMap.get('storage')!.size > 1) {
+      variants.push({
+        type: 'storage',
+        label: 'Stockage',
+        values: Array.from(variantMap.get('storage')!)
+      });
+    }
+    
+    if (variantMap.has('size') && variantMap.get('size')!.size > 1) {
+      variants.push({
+        type: 'size',
+        label: 'Taille',
+        values: Array.from(variantMap.get('size')!)
+      });
+    }
+
+    return variants;
+  });
 
   // Prix du listing sélectionné
   currentPrice = computed(() => {
@@ -149,7 +243,7 @@ export class ProductDetailComponent implements OnInit {
   getMainImage(): string {
     const prod = this.product();
     if (!prod || !prod.images || prod.images.length === 0) {
-      return 'https://via.placeholder.com/600x400';
+      return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=400&fit=crop';
     }
     return prod.images[this.selectedImage()] || prod.images[0];
   }
@@ -157,7 +251,7 @@ export class ProductDetailComponent implements OnInit {
   getThumbnailImage(index: number): string {
     const prod = this.product();
     if (!prod || !prod.images || !prod.images[index]) {
-      return 'https://via.placeholder.com/100';
+      return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop';
     }
     return prod.images[index];
   }
@@ -171,6 +265,47 @@ export class ProductDetailComponent implements OnInit {
     // Réinitialiser la quantité si elle dépasse le stock du nouveau listing
     if (this.quantity() > listing.quantity) {
       this.quantity.set(Math.min(1, listing.quantity));
+    }
+  }
+
+  selectVariant(type: string, value: string): void {
+    // Update selected variants
+    const current = { ...this.selectedVariants() };
+    current[type] = value;
+    this.selectedVariants.set(current);
+
+    // Find best matching listing based on selected variants
+    const listingsData = this.listings();
+    const matchingListing = listingsData.find(listing => {
+      const condition = listing.conditionNote || '';
+      let matches = true;
+
+      // Check each selected variant
+      Object.entries(current).forEach(([variantType, variantValue]) => {
+        const lowerCondition = condition.toLowerCase();
+        const lowerValue = variantValue.toLowerCase();
+
+        if (variantType === 'color') {
+          if (!lowerCondition.includes(lowerValue)) {
+            matches = false;
+          }
+        } else if (variantType === 'storage') {
+          if (!condition.toUpperCase().includes(variantValue.toUpperCase())) {
+            matches = false;
+          }
+        } else if (variantType === 'size') {
+          if (!lowerCondition.includes(lowerValue)) {
+            matches = false;
+          }
+        }
+      });
+
+      return matches;
+    });
+
+    // Update selected listing if match found
+    if (matchingListing) {
+      this.selectListing(matchingListing);
     }
   }
 
@@ -196,12 +331,12 @@ export class ProductDetailComponent implements OnInit {
     }
 
     if (!listing) {
-      alert('Veuillez sélectionner une offre');
+      this.notificationService.warning('Veuillez sélectionner une offre');
       return;
     }
 
     if (this.quantity() > listing.quantity) {
-      alert(`Stock insuffisant. Seulement ${listing.quantity} disponible(s)`);
+      this.notificationService.error(`Stock insuffisant. Seulement ${listing.quantity} disponible(s)`);
       return;
     }
 
@@ -216,12 +351,12 @@ export class ProductDetailComponent implements OnInit {
     this.cartService.addToCart(user.id, cartItem).subscribe({
       next: () => {
         this.addingToCart.set(false);
-        alert('Produit ajouté au panier !');
+        this.notificationService.success('Produit ajouté au panier ! 🛒');
       },
       error: (err) => {
         this.addingToCart.set(false);
         console.error('Erreur:', err);
-        alert('Erreur lors de l\'ajout au panier');
+        this.notificationService.error('Erreur lors de l\'ajout au panier');
       }
     });
   }
@@ -338,6 +473,55 @@ export class ProductDetailComponent implements OnInit {
       'delivery': 'Livraison 24h Offerte'
     };
     return titles[this.currentFeature() || ''] || '';
+  }
+
+  // Reviews Methods
+  openAddReviewModal(): void {
+    const user = this.currentUser();
+    if (!user) {
+      this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+    this.showAddReviewModal.set(true);
+  }
+
+  closeAddReviewModal(): void {
+    this.showAddReviewModal.set(false);
+  }
+
+  onReviewAdded(): void {
+    const productId = this.product()?.id;
+    if (productId) {
+      this.loadReviews(productId);
+    }
+  }
+
+  loadMoreReviews(): void {
+    const currentPage = this.reviewsPage();
+    this.reviewsPage.set(currentPage + 1);
+    const productId = this.product()?.id;
+    if (productId) {
+      this.reviewService.getProductReviews(productId, this.reviewsPage(), this.reviewsSize()).subscribe({
+        next: (page) => {
+          this.reviews.update(current => [...current, ...page.content]);
+        }
+      });
+    }
+  }
+
+  // Helper pour récupérer le nombre d'avis par note (gère les clés string du backend)
+  getRatingCount(level: number): number {
+    const stats = this.reviewStats();
+    if (!stats) return 0;
+    return stats.ratingCounts[level.toString()] || 0;
+  }
+
+  // Helper pour calculer le pourcentage de chaque note
+  getRatingPercentage(level: number): number {
+    const stats = this.reviewStats();
+    if (!stats || stats.totalReviews === 0) return 0;
+    const count = this.getRatingCount(level);
+    return (count / stats.totalReviews) * 100;
   }
 }
 

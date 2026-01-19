@@ -1,7 +1,7 @@
 .product-card {
   display: flex;
   flex-direction: column;
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
   overflow: hidden;
@@ -13,7 +13,7 @@
   &:hover {
     box-shadow: var(--shadow-xl);
     transform: translateY(-4px);
-    border-color: var(--primary-300);
+    border-color: var(--accent-green);
 
     .product-image img {
       transform: scale(1.05);
@@ -23,6 +23,11 @@
       transform: translateX(4px);
     }
   }
+  
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 212, 126, 0.5);
+  }
 }
 
 .product {
@@ -30,7 +35,7 @@
     position: relative;
     width: 100%;
     aspect-ratio: 1;
-    background: var(--bg-secondary);
+    background: var(--bg-tertiary);
     overflow: hidden;
 
     img {
@@ -47,6 +52,7 @@
     padding: var(--spacing-md);
     gap: var(--spacing-sm);
     flex: 1;
+    background: var(--bg-secondary);
   }
 
   &-brand {
@@ -54,7 +60,7 @@
     font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--primary-600);
+    color: var(--accent-green);
   }
 
   &-title {
@@ -73,7 +79,7 @@
     align-items: center;
     gap: var(--spacing-xs);
     font-size: var(--font-size-xs);
-    color: var(--text-tertiary);
+    color: var(--text-muted);
 
     .category-icon {
       width: 14px;
@@ -102,7 +108,7 @@
 
     .price-label {
       font-size: var(--font-size-xs);
-      color: var(--text-tertiary);
+      color: var(--text-muted);
     }
   }
 }
@@ -116,14 +122,13 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(15, 20, 25, 0.8);
   backdrop-filter: blur(10px);
-  border: none;
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius-full);
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-base);
-  box-shadow: var(--shadow-md);
 
   svg {
     width: 20px;
@@ -132,16 +137,23 @@
 
   &:hover {
     transform: scale(1.1);
-    color: var(--error);
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.5);
   }
 
   &.active {
-    color: var(--error);
-    background: rgba(255, 107, 107, 0.1);
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.15);
+    border-color: rgba(248, 113, 113, 0.3);
 
     &:hover {
-      background: rgba(255, 107, 107, 0.2);
+      background: rgba(248, 113, 113, 0.25);
     }
+  }
+  
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.5);
   }
 }
 
@@ -149,17 +161,35 @@
   position: absolute;
   top: var(--spacing-md);
   left: var(--spacing-md);
+  background: rgba(15, 20, 25, 0.8);
   backdrop-filter: blur(10px);
+  padding: 4px 10px;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--accent-green);
+  border: 1px solid rgba(0, 212, 126, 0.3);
 }
 
 .view-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
+  color: var(--bg-primary);
+  background: var(--accent-green);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   transition: all var(--transition-base);
 
   svg {
     width: 16px;
     height: 16px;
+  }
+  
+  &:hover {
+    background: var(--accent-green-light);
+    transform: translateX(2px);
   }
 }

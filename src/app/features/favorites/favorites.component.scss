@@ -1,6 +1,6 @@
 .favorites-page {
   min-height: calc(100vh - 160px);
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: var(--bg-primary);
   padding: 3rem 0;
 }
 
@@ -18,7 +18,7 @@
   .page-title {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #2d3748;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
     
     @media (max-width: 768px) {
@@ -28,7 +28,7 @@
 
   .page-description {
     font-size: 1.1rem;
-    color: #718096;
+    color: var(--text-secondary);
   }
 }
 
@@ -42,15 +42,15 @@
     width: 60px;
     height: 60px;
     margin: 0 auto 1.5rem;
-    border: 4px solid rgba(76, 175, 80, 0.1);
-    border-top-color: #4caf50;
+    border: 4px solid rgba(0, 212, 126, 0.1);
+    border-top-color: var(--accent-green);
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
 
   p {
     font-size: 1.1rem;
-    color: #718096;
+    color: var(--text-secondary);
   }
 }
 
@@ -58,16 +58,17 @@
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
   animation: fadeInUp 0.6s ease-out;
 
   .empty-icon {
     width: 120px;
     height: 120px;
     margin: 0 auto 2rem;
-    color: #cbd5e0;
+    color: var(--text-muted);
     
     @media (max-width: 768px) {
       width: 80px;
@@ -78,13 +79,14 @@
   h2 {
     font-size: 1.75rem;
     font-weight: 600;
-    color: #2d3748;
+    color: var(--text-primary);
+    color: var(--text-primary);
     margin-bottom: 1rem;
   }
 
   p {
     font-size: 1.1rem;
-    color: #718096;
+    color: var(--text-secondary);
     margin-bottom: 2rem;
     max-width: 500px;
     margin-left: auto;
@@ -120,16 +122,18 @@
 
 // Favorite Card
 .favorite-card {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
   transition: all 0.3s ease;
   animation: scaleIn 0.4s ease-out;
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-green);
   }
 
   .card-image {
@@ -137,7 +141,7 @@
     width: 100%;
     padding-top: 75%; // 4:3 aspect ratio
     overflow: hidden;
-    background: #f7fafc;
+    background: var(--bg-tertiary);
 
     img {
       position: absolute;
@@ -159,7 +163,7 @@
       right: 1rem;
       width: 40px;
       height: 40px;
-      background: rgba(255, 255, 255, 0.95);
+      background: var(--bg-secondary);
       border: none;
       border-radius: 50%;
       display: flex;
@@ -168,20 +172,20 @@
       cursor: pointer;
       transition: all 0.3s ease;
       z-index: 2;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-sm);
 
       svg {
         width: 18px;
         height: 18px;
-        color: #e53e3e;
+        color: #ef4444;
       }
 
       &:hover {
-        background: #e53e3e;
+        background: #ef4444;
         transform: scale(1.1);
 
         svg {
-          color: white;
+          color: var(--bg-primary);
         }
       }
     }
@@ -197,7 +201,7 @@
     .product-title {
       font-size: 1.25rem;
       font-weight: 600;
-      color: #2d3748;
+      color: var(--text-primary);
       margin-bottom: 0.5rem;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -208,7 +212,7 @@
 
     .product-brand {
       font-size: 0.95rem;
-      color: #718096;
+      color: var(--text-secondary);
       margin-bottom: 0.75rem;
     }
 
@@ -220,8 +224,8 @@
       border-radius: 6px;
 
       &.badge-secondary {
-        background: #edf2f7;
-        color: #4a5568;
+        background: var(--bg-tertiary);
+        color: var(--text-secondary);
       }
     }
   }
@@ -230,7 +234,7 @@
     .price {
       font-size: 1.5rem;
       font-weight: 700;
-      color: #4caf50;
+      color: var(--accent-green);
       margin-bottom: 1rem;
     }
 
@@ -258,20 +262,21 @@
         }
 
         &.btn-secondary {
-          background: #edf2f7;
-          color: #4a5568;
+          background: var(--bg-tertiary);
+          color: var(--text-secondary);
 
           &:hover {
-            background: #e2e8f0;
+            background: var(--bg-elevated);
+            color: var(--text-primary);
           }
         }
 
         &.btn-primary {
-          background: #4caf50;
-          color: white;
+          background: var(--accent-green);
+          color: var(--bg-primary);
 
           &:hover {
-            background: #45a049;
+            background: var(--accent-green-dark);
             transform: scale(1.02);
           }
         }

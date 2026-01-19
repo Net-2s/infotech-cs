@@ -1,12 +1,12 @@
 .profile-page {
   min-height: calc(100vh - 200px);
   padding: var(--spacing-2xl) 0;
-  background: var(--gray-50);
+  background: var(--bg-primary);
 
   .page-title {
     font-size: var(--text-3xl);
     font-weight: 700;
-    color: var(--gray-900);
+    color: var(--text-primary);
     margin-bottom: var(--spacing-2xl);
   }
 
@@ -21,7 +21,7 @@
     }
 
     p {
-      color: var(--gray-600);
+      color: var(--text-secondary);
     }
   }
 
@@ -32,14 +32,15 @@
   }
 
   .card {
-    background: white;
+    background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
+    border: 1px solid var(--border-color);
 
     .card-header {
       padding: var(--spacing-lg);
-      border-bottom: 1px solid var(--gray-200);
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -47,7 +48,7 @@
       h2 {
         font-size: var(--text-xl);
         font-weight: 600;
-        color: var(--gray-900);
+        color: var(--text-primary);
       }
     }
 
@@ -67,7 +68,7 @@
       display: block;
       font-size: var(--text-sm);
       font-weight: 600;
-      color: var(--gray-600);
+      color: var(--text-muted);
       margin-bottom: var(--spacing-xs);
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -75,7 +76,7 @@
 
     p {
       font-size: var(--text-md);
-      color: var(--gray-900);
+      color: var(--text-primary);
       margin: 0;
     }
 
@@ -89,12 +90,12 @@
   .seller-info {
     margin-top: var(--spacing-xl);
     padding-top: var(--spacing-xl);
-    border-top: 1px solid var(--gray-200);
+    border-top: 1px solid var(--border-color);
 
     h3 {
       font-size: var(--text-lg);
       font-weight: 600;
-      color: var(--gray-900);
+      color: var(--text-primary);
       margin-bottom: var(--spacing-lg);
     }
   }
@@ -107,7 +108,7 @@
         display: block;
         font-size: var(--text-sm);
         font-weight: 600;
-        color: var(--gray-700);
+        color: var(--text-secondary);
         margin-bottom: var(--spacing-sm);
       }
     }
@@ -115,10 +116,10 @@
     .form-section-title {
       font-size: var(--text-lg);
       font-weight: 600;
-      color: var(--gray-900);
+      color: var(--text-primary);
       margin: var(--spacing-xl) 0 var(--spacing-lg);
       padding-top: var(--spacing-xl);
-      border-top: 1px solid var(--gray-200);
+      border-top: 1px solid var(--border-color);
     }
 
     .form-actions {
@@ -127,68 +128,68 @@
       justify-content: flex-end;
       margin-top: var(--spacing-xl);
       padding-top: var(--spacing-xl);
-      border-top: 1px solid var(--gray-200);
+      border-top: 1px solid var(--border-color);
     }
   }
 
   .admin-card {
-    background: linear-gradient(135deg, var(--primary-50) 0%, var(--accent-50) 100%);
-    border: 2px solid var(--primary-200);
+    background: rgba(var(--accent-purple-rgb), 0.1);
+    border: 2px solid var(--accent-purple);
 
     .card-header h2 {
-      color: var(--primary-700);
+      color: var(--accent-purple);
     }
 
     .btn-block {
-      background: var(--primary-600);
-      color: white;
+      background: var(--accent-purple);
+      color: var(--bg-primary);
 
       &:hover {
-        background: var(--primary-700);
+        background: var(--accent-purple-dark);
       }
     }
   }
 
   .seller-card {
-    background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
-    border: 2px solid #ffcc80;
+    background: rgba(251, 191, 36, 0.1);
+    border: 2px solid #fbbf24;
 
     .card-header h2 {
-      color: #e65100;
+      color: #fbbf24;
     }
 
     .btn-block {
-      background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-      color: white;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: var(--bg-primary);
 
       &:hover {
-        background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
       }
     }
   }
 
   .danger-card {
-    background: var(--error-50);
-    border: 2px solid var(--error-200);
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px solid #ef4444;
 
     .card-header h2 {
-      color: var(--error-700);
+      color: #ef4444;
     }
 
     .danger-text {
-      color: var(--error-700);
+      color: #ef4444;
       margin-bottom: var(--spacing-md);
       font-size: var(--text-sm);
     }
 
     .btn-danger {
-      background: var(--error-600);
-      color: white;
+      background: #ef4444;
+      color: var(--bg-primary);
 
       &:hover {
-        background: var(--error-700);
+        background: #dc2626;
       }
     }
   }
@@ -209,7 +210,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,15 +219,16 @@
 }
 
 .modal {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: var(--radius-lg);
   max-width: 500px;
   width: 100%;
   box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-color);
 
   .modal-header {
     padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -234,7 +236,7 @@
     h2 {
       font-size: var(--text-xl);
       font-weight: 600;
-      color: var(--gray-900);
+      color: var(--text-primary);
     }
 
     .close-btn {
@@ -245,15 +247,15 @@
       justify-content: center;
       border: none;
       background: transparent;
-      color: var(--gray-500);
+      color: var(--text-muted);
       cursor: pointer;
       border-radius: var(--radius-md);
       font-size: 24px;
       transition: all 0.2s ease;
 
       &:hover {
-        background: var(--gray-100);
-        color: var(--gray-700);
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
       }
     }
   }
@@ -272,7 +274,7 @@
         display: block;
         font-size: var(--text-sm);
         font-weight: 600;
-        color: var(--gray-700);
+        color: var(--text-secondary);
         margin-bottom: var(--spacing-sm);
       }
     }
@@ -280,7 +282,7 @@
 
   .modal-footer {
     padding: var(--spacing-lg);
-    border-top: 1px solid var(--gray-200);
+    border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
     gap: var(--spacing-md);

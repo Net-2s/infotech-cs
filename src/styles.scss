@@ -1,5 +1,6 @@
 /* ========================================
    INFOTECH - Global Styles & Design System
+   Dual Theme Support (Dark/Light)
    ======================================== */
 
 /* === CSS RESET === */
@@ -20,81 +21,35 @@ body {
   background-color: var(--bg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* === CSS VARIABLES - Design Tokens === */
+/* === CSS VARIABLES - Shared Design Tokens === */
 :root {
-  /* Colors - Primary Palette */
-  --primary-50: #f0f4ff;
-  --primary-100: #dbe4ff;
-  --primary-200: #bac8ff;
-  --primary-300: #91a7ff;
-  --primary-400: #748ffc;
-  --primary-500: #5c7cfa;
-  --primary-600: #4c6ef5;
-  --primary-700: #4263eb;
-  --primary-800: #3b5bdb;
-  --primary-900: #364fc7;
+  /* Colors - Primary Accent (Green) - Shared */
+  --accent-green: #00d47e;
+  --accent-green-light: #4eeaa8;
+  --accent-green-dark: #00a863;
+  
+  /* Colors - Secondary Accent (Purple) - Shared */
+  --accent-purple: #a78bfa;
+  --accent-purple-light: #c4b5fd;
+  --accent-purple-dark: #8b5cf6;
 
-  /* Colors - Accent */
-  --accent-50: #f3f0ff;
-  --accent-100: #e5dbff;
-  --accent-200: #d0bfff;
-  --accent-300: #b197fc;
-  --accent-400: #9775fa;
-  --accent-500: #845ef7;
-  --accent-600: #7950f2;
-  --accent-700: #7048e8;
-  --accent-800: #6741d9;
-  --accent-900: #5f3dc4;
+  /* Semantic Colors - Shared */
+  --success: #00d47e;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --info: #60a5fa;
 
-  /* Colors - Neutrals */
-  --gray-50: #f8f9fa;
-  --gray-100: #f1f3f5;
-  --gray-200: #e9ecef;
-  --gray-300: #dee2e6;
-  --gray-400: #ced4da;
-  --gray-500: #adb5bd;
-  --gray-600: #868e96;
-  --gray-700: #495057;
-  --gray-800: #343a40;
-  --gray-900: #212529;
-
-  /* Semantic Colors */
-  --success: #51cf66;
-  --warning: #ffd43b;
-  --error: #ff6b6b;
-  --info: #339af0;
-
-  /* Background */
-  --bg-primary: #ffffff;
-  --bg-secondary: var(--gray-50);
-  --bg-tertiary: var(--gray-100);
-  --bg-dark: var(--gray-900);
-
-  /* Text */
-  --text-primary: var(--gray-900);
-  --text-secondary: var(--gray-700);
-  --text-tertiary: var(--gray-600);
-  --text-on-primary: #ffffff;
-
-  /* Borders */
-  --border-color: var(--gray-300);
+  /* Border Radius - Shared */
   --border-radius-sm: 8px;
   --border-radius-md: 12px;
   --border-radius-lg: 16px;
   --border-radius-xl: 24px;
   --border-radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-
-  /* Spacing */
+  /* Spacing - Shared */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
@@ -103,7 +58,7 @@ body {
   --spacing-2xl: 3rem;
   --spacing-3xl: 4rem;
 
-  /* Typography */
+  /* Typography - Shared */
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
@@ -119,16 +74,16 @@ body {
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Transitions */
+  /* Transitions - Shared */
   --transition-fast: 150ms ease-in-out;
   --transition-base: 250ms ease-in-out;
   --transition-slow: 350ms ease-in-out;
 
-  /* Container */
+  /* Container - Shared */
   --container-max-width: 1280px;
   --container-padding: var(--spacing-lg);
 
-  /* Z-index */
+  /* Z-index - Shared */
   --z-dropdown: 1000;
   --z-sticky: 1020;
   --z-fixed: 1030;
@@ -136,6 +91,142 @@ body {
   --z-modal: 1050;
   --z-popover: 1060;
   --z-tooltip: 1070;
+}
+
+/* ========================================
+   DARK THEME (Default) - Softened for eye comfort
+   ======================================== */
+:root,
+[data-theme="dark"] {
+  /* Background - Slightly warmer/softer dark tones */
+  --bg-primary: #121820;
+  --bg-secondary: #1c2736;
+  --bg-tertiary: #26374a;
+  --bg-surface: #2f4259;
+  --bg-elevated: #1c2736;
+  
+  /* RGB values for rgba() usage */
+  --bg-primary-rgb: 18, 24, 32;
+  --bg-tertiary-rgb: 38, 55, 74;
+  --accent-green-rgb: 0, 212, 126;
+  --accent-purple-rgb: 167, 139, 250;
+  --text-primary-rgb: 248, 250, 252;
+  
+  /* Purple gradient colors for dark theme */
+  --accent-purple-dark-gradient: #7c3aed;
+  
+  /* Section alternating backgrounds for visual variety */
+  --bg-section-alt: #101d18; /* Subtle green-tinted dark */
+  --bg-section-alt-2: #1c1829; /* Subtle purple-tinted dark */
+  --bg-section-alt-3: #211c16; /* Subtle warm-tinted dark */
+
+  /* Text (WCAG AA Compliant) - Slightly off-white for comfort */
+  --text-primary: #f8fafc;
+  --text-secondary: #c1cdd9;
+  --text-tertiary: #9aacbc;
+  --text-muted: #7d93a5;
+  --text-on-accent: #0f1419;
+
+  /* Borders */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --border-focus: rgba(0, 212, 126, 0.5);
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(0, 212, 126, 0.3);
+  --shadow-glow-purple: 0 0 20px rgba(167, 139, 250, 0.3);
+
+  /* Cards & Surfaces */
+  --card-bg: var(--bg-secondary);
+  --card-border: var(--border-color);
+  --card-shadow: var(--shadow-md);
+
+  /* Input fields */
+  --input-bg: var(--bg-tertiary);
+  --input-border: var(--border-color);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-muted);
+}
+
+/* ========================================
+   LIGHT THEME - Softened for eye comfort
+   ======================================== */
+[data-theme="light"] {
+  /* Background - Warm off-white tones, easier on the eyes */
+  --bg-primary: #fafbfc;
+  --bg-secondary: #f4f6f8;
+  --bg-tertiary: #eef1f4;
+  --bg-surface: #e4e8ed;
+  --bg-elevated: #fafbfc;
+  
+  /* Section alternating backgrounds for visual variety */
+  --bg-section-alt: #f0f7f4; /* Subtle green tint */
+  --bg-section-alt-2: #f6f4fa; /* Subtle purple tint */
+  --bg-section-alt-3: #faf8f4; /* Subtle warm tint */
+  
+  /* RGB values for rgba() usage */
+  --bg-primary-rgb: 250, 251, 252;
+  --bg-tertiary-rgb: 238, 241, 244;
+  --accent-green-rgb: 5, 150, 105;
+  --accent-purple-rgb: 124, 58, 237;
+  --text-primary-rgb: 30, 41, 59;
+  
+  /* Purple gradient colors for light theme */
+  --accent-purple-dark-gradient: #5b21b6;
+
+  /* Text (WCAG AA Compliant) - Softer than pure black */
+  --text-primary: #1e293b;
+  --text-secondary: #3e5068;
+  --text-tertiary: #5a6d80;
+  --text-muted: #708499;
+  --text-on-accent: #ffffff;
+
+  /* Accent adjustments for light theme */
+  --accent-green: #059669;
+  --accent-green-light: #10b981;
+  --accent-green-dark: #047857;
+  
+  --accent-purple: #7c3aed;
+  --accent-purple-light: #8b5cf6;
+  --accent-purple-dark: #6d28d9;
+
+  /* Borders */
+  --border-color: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --border-focus: rgba(5, 150, 105, 0.5);
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-glow: 0 0 20px rgba(5, 150, 105, 0.2);
+  --shadow-glow-purple: 0 0 20px rgba(124, 58, 237, 0.2);
+
+  /* Cards & Surfaces */
+  --card-bg: var(--bg-elevated);
+  --card-border: var(--border-color);
+  --card-shadow: var(--shadow-md);
+
+  /* Input fields */
+  --input-bg: var(--bg-primary);
+  --input-border: var(--border-color);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-muted);
+
+  /* Semantic Colors adjusted for light */
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+  --info: #2563eb;
 }
 
 /* === UTILITY CLASSES === */
@@ -172,28 +263,39 @@ body {
   }
 
   &-primary {
-    background: linear-gradient(135deg, var(--primary-600), var(--accent-600));
-    color: var(--text-on-primary);
+    background: var(--accent-green);
+    color: var(--text-on-accent);
     box-shadow: var(--shadow-sm);
 
     &:hover:not(:disabled) {
+      background: var(--accent-green-light);
       transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-glow);
     }
 
     &:active:not(:disabled) {
       transform: translateY(0);
     }
+    
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 212, 126, 0.5);
+    }
   }
 
   &-secondary {
-    background: var(--bg-secondary);
+    background: var(--bg-tertiary);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
 
     &:hover:not(:disabled) {
-      background: var(--bg-tertiary);
-      border-color: var(--gray-400);
+      background: var(--bg-surface);
+      border-color: var(--border-hover);
+    }
+    
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
     }
   }
 
@@ -202,8 +304,29 @@ body {
     color: var(--text-secondary);
 
     &:hover:not(:disabled) {
-      background: var(--bg-secondary);
+      background: var(--bg-tertiary);
       color: var(--text-primary);
+    }
+    
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+    }
+  }
+  
+  &-accent {
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-dark));
+    color: white;
+    box-shadow: var(--shadow-sm);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow-purple);
+    }
+    
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.5);
     }
   }
 
@@ -220,7 +343,7 @@ body {
 
 /* Cards */
 .card {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
@@ -229,6 +352,7 @@ body {
 
   &:hover {
     box-shadow: var(--shadow-md);
+    border-color: var(--border-hover);
   }
 }
 
@@ -253,24 +377,25 @@ body {
   font-size: var(--font-size-md);
   line-height: 1.5;
   color: var(--text-primary);
-  background: var(--bg-primary);
+  background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
   transition: all var(--transition-fast);
 
   &:focus {
     outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px rgba(92, 124, 250, 0.1);
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(0, 212, 126, 0.15);
   }
 
   &::placeholder {
-    color: var(--text-tertiary);
+    color: var(--text-muted);
   }
 
   &:disabled {
-    background: var(--bg-secondary);
+    background: var(--bg-surface);
     cursor: not-allowed;
+    opacity: 0.6;
   }
 }
 
@@ -290,28 +415,33 @@ body {
   border-radius: var(--border-radius-full);
   
   &-primary {
-    background: var(--primary-100);
-    color: var(--primary-700);
+    background: rgba(0, 212, 126, 0.15);
+    color: var(--accent-green);
   }
 
   &-success {
-    background: #d3f9d8;
-    color: #2b8a3e;
+    background: rgba(0, 212, 126, 0.15);
+    color: var(--accent-green);
   }
 
   &-warning {
-    background: #fff3bf;
-    color: #e67700;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
   }
 
   &-error {
-    background: #ffe3e3;
-    color: #c92a2a;
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
   }
 
   &-gray {
-    background: var(--gray-200);
-    color: var(--gray-700);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+  }
+  
+  &-purple {
+    background: rgba(167, 139, 250, 0.15);
+    color: var(--accent-purple);
   }
 }
 

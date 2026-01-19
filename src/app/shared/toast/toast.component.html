@@ -1,0 +1,24 @@
+<div class="toast-container">
+  @for (notification of notifications(); track notification.id) {
+    <div 
+      class="toast toast-{{ notification.type }}"
+      [style.border-left-color]="getColor(notification.type)"
+      [@slideIn]>
+      
+      <div class="toast-icon" [style.background]="getColor(notification.type)">
+        {{ getIcon(notification.type) }}
+      </div>
+      
+      <div class="toast-content">
+        <p class="toast-message">{{ notification.message }}</p>
+      </div>
+      
+      <button 
+        class="toast-close"
+        (click)="close(notification.id)"
+        aria-label="Fermer">
+        ✕
+      </button>
+    </div>
+  }
+</div>

@@ -3,7 +3,7 @@
 <main class="cart-page">
   <div class="container">
     <div class="page-header">
-      <h1 class="page-title">Mon Panier</h1>
+      <h1 class="page-title">Détails de votre panier</h1>
       @if (cartService.cartSummary().itemCount > 0) {
         <button class="btn btn-ghost" (click)="clearCart()">Vider le panier</button>
       }
@@ -24,37 +24,128 @@
       <div class="cart-content">
         <div class="cart-items">
           @for (item of cartService.cartSummary().items; track item.id) {
-            <div class="cart-item">
-              <div class="item-details">
-                <h3 class="item-title">{{ item.productTitle }}</h3>
-                <p class="item-brand">{{ item.productBrand }}</p>
-                <p class="item-seller">Vendu par {{ item.sellerShopName }}</p>
+            <div class="cart-item-card">
+              <!-- Badge meilleur prix -->
+              <div class="item-badges">
+                <span class="badge badge-price">Meilleur prix en 7 jours</span>
               </div>
 
-              <div class="item-quantity">
-                <button class="quantity-btn" (click)="updateQuantity(item.id, item.quantity - 1)" [disabled]="item.quantity <= 1">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                </button>
-                <span class="quantity-value">{{ item.quantity }}</span>
-                <button class="quantity-btn" (click)="updateQuantity(item.id, item.quantity + 1)">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
-                    <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                </button>
+              <!-- Contenu principal de l'article -->
+              <div class="item-main">
+                <div class="item-image">
+                  @if (item.productImage) {
+                    <img [src]="item.productImage" [alt]="item.productTitle">
+                  } @else {
+                    <div class="image-placeholder">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                    </div>
+                  }
+                </div>
+
+                <div class="item-details">
+                  <h3 class="item-title">{{ item.productTitle }}</h3>
+                  
+                  @if (item.conditionNote) {
+                    <span class="item-condition">{{ item.conditionNote }}</span>
+                  }
+
+                  <div class="item-delivery">
+                    @if (item.estimatedDeliveryMin && item.estimatedDeliveryMax) {
+                      <p class="delivery-standard">
+                        <svg viewBox="0 0 24 24" fill="none" class="delivery-icon">
+                          <path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11M14 18H9M5 18a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" stroke="currentColor" stroke-width="1.5"/>
+                          <path d="M14 7h4l3 3v7c0 .6-.4 1-1 1h-1M14 7v11M15 18a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        Livraison entre le {{ item.estimatedDeliveryMin }} et le {{ item.estimatedDeliveryMax }} · <span class="free">Offerte</span>
+                      </p>
+                    }
+                    @if (item.expressDeliveryAvailable && item.expressDeliveryDate) {
+                      <p class="delivery-express">
+                        Livraison Express entre le {{ item.expressDeliveryDate }} · à partir de {{ item.expressDeliveryPrice | currency:'EUR':'symbol':'1.2-2':'fr' }}
+                      </p>
+                    }
+                  </div>
+                </div>
+
+                <div class="item-price-section">
+                  <div class="item-price">{{ item.price | currency:'EUR':'symbol':'1.2-2':'fr' }}</div>
+                  
+                  <div class="item-quantity-actions">
+                    <select class="quantity-select" [value]="item.quantity" (change)="onQuantityChange(item.id, $event)">
+                      @for (q of [1,2,3,4,5,6,7,8,9,10]; track q) {
+                        <option [value]="q" [selected]="item.quantity === q">{{ q }}</option>
+                      }
+                    </select>
+                    <button class="btn-remove" (click)="removeItem(item.id)">Supprimer</button>
+                  </div>
+                </div>
               </div>
 
-              <div class="item-price">
-                {{ item.price * item.quantity | currency:'EUR':'symbol':'1.2-2':'fr' }}
-              </div>
+              <!-- Section assurance -->
+              <div class="insurance-section">
+                <p class="insurance-intro">
+                  La vie est pleine d'imprévus. Évitez les frais de réparation inattendus sur votre <strong>{{ item.productBrand || item.productTitle }}</strong>.
+                </p>
 
-              <button class="item-remove" (click)="removeItem(item.id)">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z" stroke="currentColor" stroke-width="2"/>
-                </svg>
-              </button>
+                <div class="insurance-options">
+                  @for (option of cartService.insuranceOptions; track option.id) {
+                    <div 
+                      class="insurance-card" 
+                      [class.selected]="item.insurance?.optionId === option.id"
+                      (click)="selectInsurance(item.id, option)">
+                      
+                      @if (option.recommended) {
+                        <span class="insurance-badge">Recommandé</span>
+                      }
+
+                      <div class="insurance-header">
+                        <div class="insurance-radio">
+                          <span class="radio-circle" [class.active]="item.insurance?.optionId === option.id"></span>
+                        </div>
+                        <div class="insurance-title-section">
+                          <h4 class="insurance-name">{{ option.name }}</h4>
+                          <div class="insurance-price">
+                            @if (option.pricePerMonth) {
+                              <span class="price-monthly">{{ option.pricePerMonth | currency:'EUR':'symbol':'1.2-2':'fr' }} /mois</span>
+                              <span class="price-detail">pour au moins {{ option.duration }} ({{ option.price | currency:'EUR':'symbol':'1.2-2':'fr' }})</span>
+                            } @else {
+                              <span class="price-annual">{{ option.price | currency:'EUR':'symbol':'1.2-2':'fr' }}</span>
+                            }
+                          </div>
+                        </div>
+                      </div>
+
+                      <ul class="insurance-benefits">
+                        @for (benefit of option.benefits; track benefit) {
+                          <li>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none">
+                              <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            {{ benefit }}
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                </div>
+
+                <div class="insurance-footer">
+                  <span class="insurance-provider">Assuré par <strong>BackUp</strong></span>
+                  <a href="#" class="insurance-link">En savoir plus</a>
+                </div>
+
+                @if (item.insurance) {
+                  <button class="btn-remove-insurance" (click)="removeInsurance(item.id, $event)">
+                    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Retirer l'assurance
+                  </button>
+                }
+              </div>
             </div>
           }
         </div>
@@ -63,9 +154,16 @@
           <h2 class="summary-title">Récapitulatif</h2>
           
           <div class="summary-row">
-            <span>Sous-total</span>
+            <span>Sous-total ({{ cartService.cartSummary().itemCount }} article{{ cartService.cartSummary().itemCount > 1 ? 's' : '' }})</span>
             <span>{{ cartService.cartSummary().subtotal | currency:'EUR':'symbol':'1.2-2':'fr' }}</span>
           </div>
+
+          @if (cartService.cartSummary().insuranceTotal > 0) {
+            <div class="summary-row">
+              <span>Assurance</span>
+              <span>{{ cartService.cartSummary().insuranceTotal | currency:'EUR':'symbol':'1.2-2':'fr' }}</span>
+            </div>
+          }
 
           <div class="summary-row">
             <span>Livraison</span>
@@ -78,6 +176,15 @@
             <span>Total</span>
             <span>{{ cartService.cartSummary().total | currency:'EUR':'symbol':'1.2-2':'fr' }}</span>
           </div>
+
+          @if (cartService.cartSummary().insuranceTotal > 0) {
+            <p class="summary-insurance-note">
+              <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Dont {{ cartService.cartSummary().insuranceTotal | currency:'EUR':'symbol':'1.2-2':'fr' }} d'assurance
+            </p>
+          }
 
           <button class="btn btn-primary btn-lg w-full" (click)="proceedToCheckout()">
             Passer la commande

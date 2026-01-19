@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { Product } from '../../core/models/product.model';
 import { FavoriteService } from '../../core/services/favorite.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss'
 })
@@ -59,8 +60,8 @@ export class ProductCardComponent {
     if (this.product.images && this.product.images.length > 0) {
       return this.product.images[0];
     }
-    // Fallback si aucune image (optionnel)
-    return 'https://via.placeholder.com/400x400/5c7cfa/ffffff?text=Pas+d\'image';
+    // Fallback si aucune image : Unsplash placeholder
+    return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop';
   }
 
   getConditionBadgeClass(): string {

@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthRequest, AuthResponse, User } from '../models/user.model';
@@ -32,6 +32,10 @@ export class AuthService {
     localStorage.removeItem(this.USER_KEY);
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
+    
+    // Vider le panier en mémoire (le backend gère son propre panier par utilisateur)
+    // On émet un événement pour que le CartService puisse réagir
+    window.dispatchEvent(new CustomEvent('user-logout'));
   }
 
   getToken(): string | null {

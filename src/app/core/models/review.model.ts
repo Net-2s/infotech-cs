@@ -4,6 +4,7 @@ export interface Review {
   userId: number;
   userName: string;
   rating: number;
+  title?: string;
   comment: string;
   createdAt: string;
   verified: boolean;
@@ -12,4 +13,5 @@ export interface Review {
 export interface ReviewStats {
   averageRating: number;
   totalReviews: number;
+  ratingCounts: { [key: string]: number }; // Distribution des notes (1-5) - clés en string
 }

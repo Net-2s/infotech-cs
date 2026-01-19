@@ -1,21 +1,21 @@
 .admin-dashboard {
   min-height: calc(100vh - 200px);
   padding: var(--spacing-2xl) 0;
-  background: var(--gray-50);
+  background: var(--bg-primary);
 
   .page-header {
     margin-bottom: var(--spacing-2xl);
 
     .page-title {
-      font-size: var(--text-3xl);
+      font-size: var(--font-size-3xl);
       font-weight: 700;
-      color: var(--gray-900);
+      color: var(--text-primary);
       margin-bottom: var(--spacing-xs);
     }
 
     .page-subtitle {
-      font-size: var(--text-lg);
-      color: var(--gray-600);
+      font-size: var(--font-size-lg);
+      color: var(--text-secondary);
     }
   }
 
@@ -27,8 +27,9 @@
   }
 
   .stat-card {
-    background: white;
-    border-radius: var(--radius-lg);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
     padding: var(--spacing-xl);
     display: flex;
     align-items: flex-start;
@@ -39,12 +40,13 @@
     &:hover {
       box-shadow: var(--shadow-md);
       transform: translateY(-2px);
+      border-color: var(--accent-green);
     }
 
     .stat-icon {
       width: 48px;
       height: 48px;
-      border-radius: var(--radius-md);
+      border-radius: var(--border-radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -56,7 +58,7 @@
       }
 
       &.users {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
         color: white;
       }
 
@@ -71,7 +73,7 @@
       }
 
       &.status {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-light) 100%);
         color: white;
       }
     }
@@ -80,22 +82,22 @@
       flex: 1;
 
       .stat-value {
-        font-size: var(--text-3xl);
+        font-size: var(--font-size-3xl);
         font-weight: 700;
-        color: var(--gray-900);
+        color: var(--text-primary);
         line-height: 1;
         margin-bottom: var(--spacing-xs);
       }
 
       .stat-label {
-        font-size: var(--text-sm);
-        color: var(--gray-600);
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
         font-weight: 500;
       }
 
       .stat-extra {
-        font-size: var(--text-xs);
-        color: var(--gray-500);
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
         margin-top: var(--spacing-xs);
       }
     }
@@ -103,9 +105,9 @@
 
   .quick-actions {
     .section-title {
-      font-size: var(--text-2xl);
+      font-size: var(--font-size-2xl);
       font-weight: 700;
-      color: var(--gray-900);
+      color: var(--text-primary);
       margin-bottom: var(--spacing-lg);
     }
 
@@ -116,30 +118,31 @@
     }
 
     .action-card {
-      background: white;
-      border-radius: var(--radius-lg);
+      background: var(--bg-secondary);
+      border-radius: var(--border-radius-lg);
       padding: var(--spacing-xl);
       text-decoration: none;
       transition: all 0.3s ease;
-      border: 2px solid transparent;
+      border: 2px solid var(--border-color);
 
       &:hover {
-        border-color: var(--primary-600);
+        border-color: var(--accent-green);
         transform: translateY(-4px);
         box-shadow: var(--shadow-lg);
 
         .action-icon {
           transform: scale(1.1);
-          background: var(--primary-600);
+          background: var(--accent-green);
+          color: var(--bg-primary);
         }
       }
 
       .action-icon {
         width: 56px;
         height: 56px;
-        border-radius: var(--radius-md);
-        background: var(--primary-50);
-        color: var(--primary-600);
+        border-radius: var(--border-radius-md);
+        background: rgba(var(--accent-green-rgb), 0.15);
+        color: var(--accent-green);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -153,15 +156,15 @@
       }
 
       .action-title {
-        font-size: var(--text-lg);
+        font-size: var(--font-size-lg);
         font-weight: 600;
-        color: var(--gray-900);
+        color: var(--text-primary);
         margin-bottom: var(--spacing-sm);
       }
 
       .action-description {
-        font-size: var(--text-sm);
-        color: var(--gray-600);
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
         line-height: 1.5;
       }
     }
@@ -178,7 +181,7 @@
     }
 
     p {
-      color: var(--gray-600);
+      color: var(--text-secondary);
     }
   }
 }

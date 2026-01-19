@@ -5,6 +5,7 @@ import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { FooterComponent } from '../../shared/footer/footer.component';
+import { InsuranceOption, SelectedInsurance } from '../../core/models/cart.model';
 
 @Component({
   selector: 'app-cart',
@@ -41,6 +42,14 @@ export class CartComponent implements OnInit {
     }
   }
 
+  onQuantityChange(itemId: number, event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const quantity = parseInt(select.value, 10);
+    if (quantity > 0) {
+      this.cartService.updateQuantity(itemId, quantity).subscribe();
+    }
+  }
+
   removeItem(itemId: number): void {
     this.cartService.removeFromCart(itemId).subscribe();
   }
@@ -49,6 +58,30 @@ export class CartComponent implements OnInit {
     if (confirm('Voulez-vous vraiment vider le panier ?')) {
       this.cartService.clearCart().subscribe();
     }
+  }
+
+  selectInsurance(cartItemId: number, option: InsuranceOption): void {
+    const currentItem = this.cartSummary().items.find(item => item.id === cartItemId);
+    
+    // Si l'option est déjà sélectionnée, on la désélectionne
+    if (currentItem?.insurance?.optionId === option.id) {
+      this.cartService.removeItemInsurance(cartItemId);
+      return;
+    }
+
+    const selectedInsurance: SelectedInsurance = {
+      optionId: option.id,
+      type: option.type,
+      name: option.name,
+      price: option.price
+    };
+    
+    this.cartService.setItemInsurance(cartItemId, selectedInsurance);
+  }
+
+  removeInsurance(cartItemId: number, event: Event): void {
+    event.stopPropagation();
+    this.cartService.removeItemInsurance(cartItemId);
   }
 
   proceedToCheckout(): void {

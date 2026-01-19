@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +10,17 @@ import { ProductCardComponent } from '../../shared/product-card/product-card.com
 import { HeaderComponent } from '../../shared/header/header.component';
 import { FooterComponent } from '../../shared/footer/footer.component';
 
+interface CarouselSlide {
+  id: number;
+  image: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  ctaText: string;
+  ctaLink: string;
+  badge?: string;
+}
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -17,7 +28,7 @@ import { FooterComponent } from '../../shared/footer/footer.component';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   private router = inject(Router);
@@ -35,10 +46,101 @@ export class HomeComponent implements OnInit {
   // Filter
   selectedCategoryId: number | null = null;
 
+  // Carousel
+  currentSlide = signal(0);
+  private carouselInterval: ReturnType<typeof setInterval> | null = null;
+  
+  carouselSlides: CarouselSlide[] = [
+    {
+      id: 1,
+      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=1200',
+      title: 'iPhone 15 Pro',
+      subtitle: 'Reconditionné Premium',
+      description: 'Le dernier flagship Apple à prix réduit. Garanti 24 mois avec passeport numérique.',
+      ctaText: 'Découvrir',
+      ctaLink: '/products',
+      badge: '-30%'
+    },
+    {
+      id: 2,
+      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1200',
+      title: 'MacBook Pro M3',
+      subtitle: 'Performance Pro',
+      description: 'La puissance de la puce M3 dans un MacBook reconditionné certifié.',
+      ctaText: 'Explorer',
+      ctaLink: '/products',
+      badge: 'Nouveau'
+    },
+    {
+      id: 3,
+      image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=1200',
+      title: 'Galaxy Watch 6',
+      subtitle: 'Connecté & Éco',
+      description: 'La montre connectée Samsung reconditionnée avec garantie étendue.',
+      ctaText: 'Voir les offres',
+      ctaLink: '/products',
+      badge: 'Populaire'
+    },
+    {
+      id: 4,
+      image: 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=1200',
+      title: 'iPad Pro 2024',
+      subtitle: 'Créativité Sans Limite',
+      description: 'La tablette ultime pour les créatifs, reconditionnée avec soin.',
+      ctaText: 'Commander',
+      ctaLink: '/products',
+      badge: '-25%'
+    }
+  ];
+
   ngOnInit(): void {
-    // Scroll to top when landing on home page
     window.scrollTo({ top: 0, behavior: 'smooth' });
     this.loadData();
+    this.startCarousel();
+  }
+
+  ngOnDestroy(): void {
+    this.stopCarousel();
+  }
+
+  // Carousel Methods
+  startCarousel(): void {
+    this.carouselInterval = setInterval(() => {
+      this.nextSlide();
+    }, 5000);
+  }
+
+  stopCarousel(): void {
+    if (this.carouselInterval) {
+      clearInterval(this.carouselInterval);
+      this.carouselInterval = null;
+    }
+  }
+
+  nextSlide(): void {
+    this.currentSlide.update(current => 
+      current >= this.carouselSlides.length - 1 ? 0 : current + 1
+    );
+  }
+
+  prevSlide(): void {
+    this.currentSlide.update(current => 
+      current <= 0 ? this.carouselSlides.length - 1 : current - 1
+    );
+  }
+
+  goToSlide(index: number): void {
+    this.currentSlide.set(index);
+    this.stopCarousel();
+    this.startCarousel();
+  }
+
+  onCarouselKeydown(event: KeyboardEvent): void {
+    if (event.key === 'ArrowLeft') {
+      this.prevSlide();
+    } else if (event.key === 'ArrowRight') {
+      this.nextSlide();
+    }
   }
 
   loadData(): void {

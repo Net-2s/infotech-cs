@@ -95,9 +95,123 @@
       </div>
 
       <form class="modal-body" (ngSubmit)="createProduct()">
-        <!-- Informations produit -->
-        <div class="form-section">
-          <h3>📋 Informations du produit</h3>
+        <!-- Choix du mode de création -->
+        <div class="form-section mode-selection">
+          <h3>🎯 Type d'ajout</h3>
+          <div class="mode-buttons">
+            <button 
+              type="button"
+              class="mode-btn"
+              [class.active]="creationMode === 'new'"
+              (click)="setCreationMode('new')">
+              <div class="mode-icon">🆕</div>
+              <div class="mode-content">
+                <strong>Nouveau produit</strong>
+                <span>Créer un produit qui n'existe pas encore dans le catalogue</span>
+              </div>
+            </button>
+            
+            <button 
+              type="button"
+              class="mode-btn"
+              [class.active]="creationMode === 'existing'"
+              (click)="setCreationMode('existing')">
+              <div class="mode-icon">🔍</div>
+              <div class="mode-content">
+                <strong>Produit existant</strong>
+                <span>Vendre un produit déjà présent dans le catalogue</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- MODE: Produit existant -->
+        @if (creationMode === 'existing') {
+          <div class="form-section">
+            <h3>🔎 Rechercher un produit</h3>
+            
+            <div class="search-box">
+              <input 
+                type="text"
+                class="form-input search-input"
+                [(ngModel)]="searchQuery"
+                name="searchQuery"
+                (input)="searchExistingProducts()"
+                placeholder="Rechercher par titre, marque, modèle...">
+              
+              @if (isSearching()) {
+                <div class="search-spinner"></div>
+              }
+            </div>
+
+            <!-- Résultats de recherche -->
+            @if (searchResults().length > 0) {
+              <div class="search-results">
+                <p class="results-count">{{ searchResults().length }} produit(s) trouvé(s)</p>
+                <div class="results-list">
+                  @for (product of searchResults(); track product.id) {
+                    <div 
+                      class="result-item"
+                      [class.selected]="selectedExistingProduct?.id === product.id"
+                      (click)="selectExistingProduct(product)">
+                      <div class="result-image">
+                        @if (product.images && product.images.length > 0) {
+                          <img [src]="product.images[0]" [alt]="product.title">
+                        } @else {
+                          <div class="image-placeholder">📦</div>
+                        }
+                      </div>
+                      <div class="result-info">
+                        <h4>{{ product.title }}</h4>
+                        <p class="result-meta">{{ product.brand }} - {{ product.model }}</p>
+                        <span class="result-badge">{{ product.condition }}</span>
+                      </div>
+                      @if (selectedExistingProduct?.id === product.id) {
+                        <div class="selected-check">✓</div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else if (searchQuery && !isSearching()) {
+              <div class="no-results">
+                <p>😕 Aucun produit trouvé pour "{{ searchQuery }}"</p>
+                <p class="hint">Essayez avec d'autres mots-clés ou créez un nouveau produit</p>
+              </div>
+            }
+
+            <!-- Produit sélectionné -->
+            @if (selectedExistingProduct) {
+              <div class="selected-product-card">
+                <div class="card-header">
+                  <h4>✓ Produit sélectionné</h4>
+                  <button type="button" class="btn-text" (click)="selectedExistingProduct = null">Changer</button>
+                </div>
+                <div class="product-preview">
+                  <div class="preview-image">
+                    @if (selectedExistingProduct.images && selectedExistingProduct.images.length > 0) {
+                      <img [src]="selectedExistingProduct.images[0]" [alt]="selectedExistingProduct.title">
+                    } @else {
+                      <div class="image-placeholder">📦</div>
+                    }
+                  </div>
+                  <div class="preview-info">
+                    <h4>{{ selectedExistingProduct.title }}</h4>
+                    <p><strong>Marque:</strong> {{ selectedExistingProduct.brand }}</p>
+                    <p><strong>Modèle:</strong> {{ selectedExistingProduct.model }}</p>
+                    <p><strong>État:</strong> {{ selectedExistingProduct.condition }}</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- MODE: Nouveau produit -->
+        @if (creationMode === 'new') {
+          <!-- Informations produit -->
+          <div class="form-section">
+            <h3>📋 Informations du produit</h3>
           
           <div class="form-row">
             <div class="form-group">
@@ -204,11 +318,228 @@
               placeholder="Ex: Légères traces d'usage, écran impeccable..."></textarea>
           </div>
         </div>
+      }
 
-        <!-- Upload d'images -->
+      <!-- Section prix et stock (commune aux deux modes) -->
         <div class="form-section">
-          <h3>📸 Images du produit *</h3>
-          <p class="section-help">Ajoutez des photos de votre produit (formats: JPG, PNG, WebP, GIF - max 10MB par image)</p>
+          <h3>💰 Votre offre de vente</h3>
+          <p class="section-help">Définissez le prix et la quantité disponible pour votre offre</p>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Prix de vente (€) *</label>
+              <input 
+                type="number" 
+                class="form-input" 
+                [(ngModel)]="newProduct.price"
+                name="price"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label>Quantité en stock *</label>
+              <input 
+                type="number" 
+                class="form-input" 
+                [(ngModel)]="newProduct.quantity"
+                name="quantity"
+                placeholder="1"
+                min="1"
+                required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Note sur l'état de votre produit</label>
+            <textarea 
+              class="form-input" 
+              rows="2"
+              [(ngModel)]="newProduct.conditionNote"
+              name="conditionNote"
+              placeholder="Ex: Légères traces d'usage, écran impeccable, emballage d'origine..."></textarea>
+          </div>
+        </div>
+
+        <!-- Passeport Numérique (uniquement pour nouveau produit) -->
+        @if (creationMode === 'new') {
+          <div class="form-section passport-section">
+            <div class="section-header-toggle">
+              <div>
+                <h3>🌍 Passeport Numérique (Optionnel)</h3>
+                <p class="section-help">Ajoutez des informations sur l'empreinte écologique et la durabilité de votre produit</p>
+              </div>
+              <label class="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  [checked]="addDigitalPassport()"
+                  (change)="addDigitalPassport.set(!addDigitalPassport())">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            @if (addDigitalPassport()) {
+              <div class="passport-form">
+                <!-- Empreinte Carbone -->
+                <div class="passport-subsection">
+                  <h4>🌡️ Empreinte Carbone</h4>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Score Carbone</label>
+                      <select 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.carbonScore"
+                        name="carbonScore">
+                        @for (score of carbonScores; track score) {
+                          <option [value]="score">{{ score }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Émissions totales (kg CO₂)</label>
+                      <input 
+                        type="number" 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.totalEmissions"
+                        name="totalEmissions"
+                        step="0.1">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Fabrication (kg CO₂)</label>
+                      <input 
+                        type="number" 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.manufacturing"
+                        name="manufacturing"
+                        step="0.1">
+                    </div>
+                    <div class="form-group">
+                      <label>Transport (kg CO₂)</label>
+                      <input 
+                        type="number" 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.transport"
+                        name="transport"
+                        step="0.1">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Traçabilité -->
+                <div class="passport-subsection">
+                  <h4>📍 Traçabilité</h4>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Pays d'origine</label>
+                      <input 
+                        type="text" 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.origin"
+                        name="origin"
+                        placeholder="Ex: France">
+                    </div>
+                    <div class="form-group">
+                      <label>Fabricant</label>
+                      <input 
+                        type="text" 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.manufacturer"
+                        name="manufacturer"
+                        placeholder="Ex: Apple Inc.">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Date de fabrication</label>
+                    <input 
+                      type="date" 
+                      class="form-input" 
+                      [(ngModel)]="digitalPassportData.manufacturingDate"
+                      name="manufacturingDate">
+                  </div>
+                </div>
+
+                <!-- Matériaux -->
+                <div class="passport-subsection">
+                  <h4>♻️ Matériaux</h4>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Matériaux renouvelables (%)</label>
+                      <input 
+                        type="number" 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.renewableMaterials"
+                        name="renewableMaterials"
+                        min="0"
+                        max="100">
+                    </div>
+                    <div class="form-group">
+                      <label>Matériaux recyclés (%)</label>
+                      <input 
+                        type="number" 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.recycledMaterials"
+                        name="recycledMaterials"
+                        min="0"
+                        max="100">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Durabilité -->
+                <div class="passport-subsection">
+                  <h4>🔧 Durabilité</h4>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Score de réparabilité (/10)</label>
+                      <input 
+                        type="number" 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.repairabilityScore"
+                        name="repairabilityScore"
+                        min="0"
+                        max="10"
+                        step="0.1">
+                    </div>
+                    <div class="form-group">
+                      <label>Garantie (mois)</label>
+                      <input 
+                        type="number" 
+                        class="form-input" 
+                        [(ngModel)]="digitalPassportData.warranty"
+                        name="warranty"
+                        min="0">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Certifications -->
+                <div class="passport-subsection">
+                  <h4>🏆 Certifications</h4>
+                  <div class="form-group">
+                    <label>Certifications (séparées par virgule)</label>
+                    <input 
+                      type="text" 
+                      class="form-input" 
+                      [(ngModel)]="digitalPassportData.certifications"
+                      name="certifications"
+                      placeholder="Ex: CE, RoHS, Energy Star">
+                    <small class="form-hint">Exemples: CE, RoHS, Energy Star, ISO 14001, Fair Trade, Bio</small>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Upload d'images (uniquement pour nouveau produit) -->
+        @if (creationMode === 'new') {
+          <div class="form-section">
+            <h3>📸 Images du produit *</h3>
+            <p class="section-help">Ajoutez des photos de votre produit (formats: JPG, PNG, WebP, GIF - max 10MB par image)</p>
 
           <!-- Zone de drop -->
           <div 
@@ -252,6 +583,7 @@
             </div>
           }
         </div>
+      }
       </form>
 
       <div class="modal-footer">
@@ -262,12 +594,16 @@
           type="button" 
           class="btn btn-primary"
           (click)="createProduct()" 
-          [disabled]="isUploading()">
+          [disabled]="isUploading() || (creationMode === 'existing' && !selectedExistingProduct)">
           @if (isUploading()) {
             <span class="btn-spinner"></span>
             Création en cours...
           } @else {
-            ✓ Créer le produit
+            @if (creationMode === 'new') {
+              ✓ Créer le produit
+            } @else {
+              ✓ Ajouter mon offre
+            }
           }
         </button>
       </div>

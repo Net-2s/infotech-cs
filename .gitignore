@@ -1,1 +1,21 @@
 node_modules
+
+# Fichiers système
+.DS_Store
+.gitkeep-images
+
+# Fichiers temporaires
+*.backup
+*.old
+*.new
+
+# Diagnostics
+diagnostic-*.sql
+
+# Distribution
+dist/
+.angular/
+
+# Logs
+*.log
+npm-debug.log*

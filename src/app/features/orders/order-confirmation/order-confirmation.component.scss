@@ -1,6 +1,6 @@
 .order-confirmation-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-primary) 100%);
+  background: var(--bg-primary);
   padding: var(--spacing-3xl) 0;
 }
 
@@ -8,7 +8,8 @@
 .success-banner {
   text-align: center;
   padding: var(--spacing-3xl);
-  background: white;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius-xl);
   box-shadow: var(--shadow-lg);
   margin-bottom: var(--spacing-2xl);
@@ -19,7 +20,7 @@
   width: 80px;
   height: 80px;
   margin: 0 auto var(--spacing-lg);
-  color: var(--success-600);
+  color: var(--accent-green);
   
   svg {
     width: 100%;
@@ -49,7 +50,8 @@
 }
 
 .info-card {
-  background: white;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   padding: var(--spacing-xl);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
@@ -62,15 +64,17 @@
   &:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
+    border-color: var(--accent-green);
   }
 
   &.highlight {
-    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
+    color: var(--text-on-accent);
+    border-color: transparent;
 
     .card-icon {
       background: rgba(255, 255, 255, 0.2);
-      color: white;
+      color: var(--text-on-accent);
     }
 
     .card-label {
@@ -78,7 +82,7 @@
     }
 
     .card-value {
-      color: white;
+      color: var(--text-on-accent);
     }
   }
 }
@@ -86,8 +90,8 @@
 .card-icon {
   width: 50px;
   height: 50px;
-  background: var(--primary-50);
-  color: var(--primary-600);
+  background: rgba(var(--accent-green-rgb), 0.15);
+  color: var(--accent-green);
   border-radius: var(--border-radius-lg);
   display: flex;
   align-items: center;
@@ -127,7 +131,8 @@
 
 // Order Details
 .order-details {
-  background: white;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   padding: var(--spacing-2xl);
   border-radius: var(--border-radius-xl);
   box-shadow: var(--shadow-lg);
@@ -162,7 +167,7 @@
     svg {
       width: 20px;
       height: 20px;
-      color: var(--primary-600);
+      color: var(--accent-green);
     }
   }
 }
@@ -178,7 +183,7 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: var(--spacing-md);
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   border-radius: var(--border-radius-md);
 }
 
@@ -200,13 +205,13 @@
 
 .item-price {
   font-weight: var(--font-weight-bold);
-  color: var(--primary-600);
+  color: var(--accent-green);
   white-space: nowrap;
 }
 
 .address-info {
   padding: var(--spacing-md);
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   border-radius: var(--border-radius-md);
   line-height: 1.6;
 
@@ -258,7 +263,8 @@
 }
 
 .help-card {
-  background: white;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   padding: var(--spacing-xl);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
@@ -268,12 +274,13 @@
   &:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
+    border-color: var(--accent-green);
   }
 
   svg {
     width: 48px;
     height: 48px;
-    color: var(--primary-600);
+    color: var(--accent-green);
     margin: 0 auto var(--spacing-md);
   }
 
@@ -292,13 +299,13 @@
   .help-link {
     display: inline-flex;
     align-items: center;
-    color: var(--primary-600);
+    color: var(--accent-green);
     font-weight: var(--font-weight-semibold);
     text-decoration: none;
     transition: color var(--transition-fast);
 
     &:hover {
-      color: var(--primary-700);
+      color: var(--accent-green-hover);
       text-decoration: underline;
     }
   }

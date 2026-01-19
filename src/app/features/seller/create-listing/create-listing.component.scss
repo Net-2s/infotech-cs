@@ -1,7 +1,7 @@
 .create-listing-page {
   padding: var(--spacing-xl) 0;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-elevated) 100%);
 }
 
 .page-header {
@@ -24,10 +24,11 @@
 .form-container {
   max-width: 800px;
   margin: 0 auto;
-  background: white;
+  background: var(--bg-secondary);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-2xl);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
 }
 
 .form-section {
@@ -42,7 +43,7 @@
   .section-title {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
-    color: var(--primary-600);
+    color: var(--accent-green);
     margin-bottom: var(--spacing-lg);
     display: flex;
     align-items: center;
@@ -52,7 +53,7 @@
       content: '';
       width: 4px;
       height: 24px;
-      background: var(--primary-600);
+      background: var(--accent-green);
       border-radius: var(--border-radius-sm);
     }
   }
@@ -84,6 +85,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-sm);
+  background: var(--bg-tertiary);
 }
 
 .product-item {
@@ -96,15 +98,16 @@
   cursor: pointer;
   transition: all var(--transition-base);
   margin-bottom: var(--spacing-sm);
+  background: var(--bg-secondary);
 
   &:hover {
-    background: var(--primary-50);
-    border-color: var(--primary-300);
+    background: rgba(var(--accent-green-rgb), 0.1);
+    border-color: var(--accent-green);
   }
 
   &.selected {
-    background: var(--primary-100);
-    border-color: var(--primary-600);
+    background: rgba(var(--accent-green-rgb), 0.15);
+    border-color: var(--accent-green);
   }
 
   .product-info {
@@ -127,7 +130,7 @@
   .check-icon {
     width: 24px;
     height: 24px;
-    color: var(--primary-600);
+    color: var(--accent-green);
     flex-shrink: 0;
   }
 }
@@ -139,8 +142,8 @@
 }
 
 .selected-product-preview {
-  background: var(--success-50);
-  border: 1px solid var(--success-200);
+  background: rgba(var(--accent-green-rgb), 0.1);
+  border: 1px solid var(--accent-green);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-xl);
@@ -148,7 +151,7 @@
   h3 {
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
-    color: var(--success-700);
+    color: var(--accent-green);
     margin-bottom: var(--spacing-sm);
   }
 
@@ -164,8 +167,8 @@
 
     .badge {
       padding: 4px 12px;
-      background: var(--primary-600);
-      color: white;
+      background: var(--accent-green);
+      color: var(--bg-primary);
       border-radius: var(--border-radius-full);
       font-size: var(--font-size-sm);
     }
@@ -201,15 +204,17 @@
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-base);
   transition: all var(--transition-base);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 
   &:focus {
     outline: none;
-    border-color: var(--primary-600);
-    box-shadow: 0 0 0 3px var(--primary-100);
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(var(--accent-green-rgb), 0.2);
   }
 
   &::placeholder {
-    color: var(--text-secondary);
+    color: var(--text-muted);
   }
 }
 
@@ -230,15 +235,16 @@
 }
 
 .listing-summary {
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+  background: var(--bg-tertiary);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
+  border: 1px solid var(--border-color);
 
   h3 {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
-    color: var(--primary-600);
+    color: var(--accent-green);
     margin-bottom: var(--spacing-lg);
   }
 
@@ -252,7 +258,7 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-sm) 0;
-    border-bottom: 1px solid var(--primary-200);
+    border-bottom: 1px solid var(--border-color);
 
     &:last-child {
       border-bottom: none;
@@ -269,7 +275,7 @@
 
       &.price {
         font-size: var(--font-size-xl);
-        color: var(--primary-600);
+        color: var(--accent-green);
         font-weight: var(--font-weight-bold);
       }
     }

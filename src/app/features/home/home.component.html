@@ -1,135 +1,172 @@
 <app-header></app-header>
 
-<main class="home">
-  <!-- Hero Section avec Barre de Recherche (Style Back Market) -->
-  <section class="hero-search">
-    <div class="container">
-      <h1 class="hero-title animate-slide-up">
-        Achetez <span class="gradient-text">reconditionné</span>,<br>
-        économisez, préservez la planète
-      </h1>
+<main class="home premium-theme">
+  <!-- Hero Carousel Section -->
+  <section class="hero-carousel" 
+           role="region" 
+           aria-label="Carrousel des offres vedettes"
+           tabindex="0"
+           (keydown)="onCarouselKeydown($event)">
+    
+    <div class="carousel-container">
+      <div class="carousel-track" [style.transform]="'translateX(-' + (currentSlide() * 100) + '%)'">
+        @for (slide of carouselSlides; track slide.id; let i = $index) {
+          <div class="carousel-slide" 
+               [class.active]="currentSlide() === i"
+               role="group"
+               [attr.aria-label]="'Slide ' + (i + 1) + ' sur ' + carouselSlides.length"
+               [attr.aria-hidden]="currentSlide() !== i">
+            <div class="slide-background">
+              <img [src]="slide.image" 
+                   [alt]="slide.title + ' - ' + slide.subtitle"
+                   loading="lazy">
+              <div class="slide-overlay"></div>
+            </div>
+            <div class="slide-content">
+              @if (slide.badge) {
+                <span class="slide-badge">{{ slide.badge }}</span>
+              }
+              <span class="slide-subtitle">{{ slide.subtitle }}</span>
+              <h2 class="slide-title">{{ slide.title }}</h2>
+              <p class="slide-description">{{ slide.description }}</p>
+              <a [routerLink]="slide.ctaLink" class="slide-cta">
+                {{ slide.ctaText }}
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        }
+      </div>
       
-      <!-- Barre de recherche principale -->
-      <div class="search-bar-hero">
-        <div class="search-input-wrapper">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none">
+      <!-- Carousel Controls -->
+      <button class="carousel-btn carousel-prev" 
+              (click)="prevSlide()"
+              aria-label="Slide précédent">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </button>
+      <button class="carousel-btn carousel-next" 
+              (click)="nextSlide()"
+              aria-label="Slide suivant">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </button>
+      
+      <!-- Carousel Indicators -->
+      <div class="carousel-indicators" role="tablist" aria-label="Sélection de slide">
+        @for (slide of carouselSlides; track slide.id; let i = $index) {
+          <button class="carousel-indicator" 
+                  [class.active]="currentSlide() === i"
+                  (click)="goToSlide(i)"
+                  role="tab"
+                  [attr.aria-selected]="currentSlide() === i"
+                  [attr.aria-label]="'Aller au slide ' + (i + 1) + ': ' + slide.title">
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Search Bar Section -->
+  <section class="search-section" aria-label="Recherche de produits">
+    <div class="container">
+      <div class="search-wrapper">
+        <div class="search-bar">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
           </svg>
           <input 
-            type="text" 
-            class="search-input"
-            placeholder="Rechercher un produit, une marque..."
+            type="search" 
             [(ngModel)]="searchQuery"
+            (input)="onSearchInput()"
             (keyup.enter)="searchProducts()"
-            (input)="onSearchInput()">
+            placeholder="Rechercher un iPhone, MacBook, Galaxy..."
+            class="search-input"
+            aria-label="Rechercher un produit">
           @if (searchQuery) {
-            <button class="clear-search" (click)="clearSearch()">
+            <button class="search-clear" (click)="clearSearch()" aria-label="Effacer la recherche">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2"/>
               </svg>
             </button>
           }
+          <button class="search-submit" (click)="searchProducts()" aria-label="Lancer la recherche">
+            Rechercher
+          </button>
         </div>
-        <button class="search-button" (click)="searchProducts()">
-          Rechercher
-        </button>
-      </div>
-
-      <!-- Suggestions de recherche -->
-      @if (showSuggestions && searchSuggestions.length > 0) {
-        <div class="search-suggestions">
-          @for (suggestion of searchSuggestions; track suggestion) {
-            <button class="suggestion-item" (click)="selectSuggestion(suggestion)">
-              <svg viewBox="0 0 24 24" fill="none">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-                <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              {{ suggestion }}
-            </button>
-          }
-        </div>
-      }
-
-      <!-- Stats rapides -->
-      <div class="hero-stats">
-        <div class="stat">
-          <div class="stat-value">10K+</div>
-          <div class="stat-label">Produits</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value">-70%</div>
-          <div class="stat-label">vs Neuf</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value">24h</div>
-          <div class="stat-label">Livraison</div>
-        </div>
+        
+        @if (showSuggestions && searchSuggestions.length > 0) {
+          <ul class="search-suggestions" role="listbox">
+            @for (suggestion of searchSuggestions; track suggestion) {
+              <li role="option">
+                <button (click)="selectSuggestion(suggestion)">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                    <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  {{ suggestion }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
       </div>
     </div>
   </section>
 
-  <!-- Categories Grid (Style Back Market) -->
-  <section class="categories-quick-access">
+  <!-- Categories Section -->
+  <section class="categories-section" aria-labelledby="categories-title">
     <div class="container">
-      <div class="categories-scroll">
+      <h2 id="categories-title" class="section-title">
+        <span class="title-accent">Explorez</span> nos catégories
+      </h2>
+      <div class="categories-grid" role="list">
         @for (category of categories; track category.id) {
-          <button 
-            class="category-chip"
-            [class.active]="selectedCategoryId === category.id"
-            (click)="filterByCategory(category.id)">
-            <span class="category-emoji">{{ getCategoryEmoji(category.name) }}</span>
-            <span class="category-label">{{ category.name }}</span>
-          </button>
-        }
-        @if (selectedCategoryId) {
-          <button class="category-chip reset" (click)="resetCategory()">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2"/>
-            </svg>
-            Tout voir
-          </button>
+          <a [routerLink]="['/products']" 
+             [queryParams]="{categoryId: category.id}" 
+             class="category-card"
+             role="listitem">
+            <div class="category-icon" aria-hidden="true">
+              <span>{{ getCategoryEmoji(category.name) }}</span>
+            </div>
+            <span class="category-name">{{ category.name }}</span>
+          </a>
         }
       </div>
     </div>
   </section>
 
-  <!-- Featured Products -->
-  <section class="featured-section">
+  <!-- Products Showcase (Best-sellers) -->
+  <section class="products-section" aria-labelledby="products-title">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">
-          @if (selectedCategoryId) {
-            {{ getSelectedCategoryName() }}
-          } @else {
-            Meilleures offres du moment
-          }
-        </h2>
-        <a routerLink="/products" class="btn btn-ghost">
-          Voir tout
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <div class="header-content">
+          <span class="section-label">SÉLECTION DU MOMENT</span>
+          <h2 id="products-title" class="section-title">
+            Nos <span class="title-accent">Best-sellers</span>
+          </h2>
+        </div>
+        <a routerLink="/products" class="btn-see-all">
+          Voir tout le catalogue
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"/>
           </svg>
         </a>
       </div>
 
       @if (isLoading) {
-        <div class="loading-state">
-          <div class="spinner"></div>
+        <div class="loading-state" role="status" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div>
           <p>Chargement des produits...</p>
         </div>
-      } @else if (filteredProducts.length === 0) {
-        <div class="empty-state">
-          <svg viewBox="0 0 24 24" fill="none">
-            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
-          </svg>
-          <p>Aucun produit trouvé</p>
-          <button class="btn btn-primary" (click)="resetCategory()">Voir tous les produits</button>
-        </div>
       } @else {
-        <div class="products-grid grid grid-4">
-          @for (product of filteredProducts.slice(0, 8); track product.id) {
+        <div class="products-grid">
+          @for (product of featuredProducts.slice(0, 8); track product.id) {
             <app-product-card [product]="product" [price]="699"></app-product-card>
           }
         </div>
@@ -137,83 +174,238 @@
     </div>
   </section>
 
-  <!-- Benefits Section -->
-  <section class="benefits-section">
+  <!-- Why Us Section (Éco-Tech Réinventé) -->
+  <section class="why-section" aria-labelledby="why-title">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Pourquoi choisir Infotech ?</h2>
+      <div class="section-header centered">
+        <span class="section-label">POURQUOI INFOTECH</span>
+        <h2 id="why-title" class="section-title">
+          L'Éco-Tech, <span class="title-accent">Réinventé</span>
+        </h2>
       </div>
 
-      <div class="benefits-grid">
-        <div class="benefit-card">
-          <div class="benefit-icon">
+      <div class="features-grid" role="list">
+        <!-- Feature 1 - Large -->
+        <article class="feature-card feature-large" role="listitem">
+          <div class="feature-icon green" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2"/>
+              <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2"/>
             </svg>
           </div>
-          <h3 class="benefit-title">Qualité garantie</h3>
-          <p class="benefit-description">
-            Tous nos produits sont testés et certifiés par nos experts
+          <h3 class="feature-title">Transparence Radicale</h3>
+          <p class="feature-desc">
+            Chaque produit possède son <strong>Passeport Numérique™</strong> unique. 
+            Batterie, écran, historique : tout est audité, rien n'est caché.
           </p>
-        </div>
+          <a routerLink="/products" class="feature-link">
+            Voir les certificats
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </a>
+        </article>
 
-        <div class="benefit-card">
-          <div class="benefit-icon">
+        <!-- Feature 2 -->
+        <article class="feature-card" role="listitem">
+          <div class="feature-icon blue" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2"/>
+              <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2"/>
             </svg>
           </div>
-          <h3 class="benefit-title">Paiement sécurisé</h3>
-          <p class="benefit-description">
-            Vos transactions sont protégées avec un cryptage SSL
+          <h3 class="feature-title">Infotech Bot</h3>
+          <p class="feature-desc">
+            L'assistant IA qui analyse les composants et vous guide vers le meilleur choix.
           </p>
-        </div>
+        </article>
 
-        <div class="benefit-card">
-          <div class="benefit-icon">
+        <!-- Feature 3 -->
+        <article class="feature-card" role="listitem">
+          <div class="feature-icon red" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 7h-9M14 3v4M6 21V7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2"/>
-              <path d="M6 13h6" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2"/>
             </svg>
+            <span class="live-badge" aria-label="En direct">● LIVE</span>
           </div>
-          <h3 class="benefit-title">Livraison rapide</h3>
-          <p class="benefit-description">
-            Recevez vos produits en 24h partout en France
+          <h3 class="feature-title">Live Shopping</h3>
+          <p class="feature-desc">
+            Les vendeurs présentent leurs stocks en vidéo. Achetez en direct !
           </p>
-        </div>
+        </article>
 
-        <div class="benefit-card">
-          <div class="benefit-icon">
+        <!-- Feature 4 -->
+        <article class="feature-card" role="listitem">
+          <div class="feature-icon purple" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
-              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2"/>
             </svg>
           </div>
-          <h3 class="benefit-title">Retour 30 jours</h3>
-          <p class="benefit-description">
-            Changez d'avis ? Retournez votre produit gratuitement
+          <h3 class="feature-title">Impact Tracker</h3>
+          <p class="feature-desc">
+            Suivez votre empreinte carbone économisée à chaque achat.
           </p>
-        </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="cta-section">
+  <!-- Infinity Section -->
+  <section class="infinity-section" aria-labelledby="infinity-title">
     <div class="container">
-      <div class="cta-card">
-        <h2 class="cta-title">Prêt à faire des économies ?</h2>
-        <p class="cta-description">
-          Rejoignez des milliers de clients satisfaits et découvrez nos meilleures offres
+      <div class="infinity-content">
+        <div class="infinity-badge">
+          <span class="infinity-icon">∞</span>
+          <span>NOUVEAU</span>
+        </div>
+        <h2 id="infinity-title" class="infinity-title">
+          Infotech <span class="gradient-purple">Infinity</span>
+        </h2>
+        <p class="infinity-desc">
+          Le leasing nouvelle génération. Louez votre appareil et changez-en au 18ème mois.
         </p>
-        <a routerLink="/products" class="btn btn-primary btn-lg">
-          Commencer à acheter
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <div class="infinity-features">
+          <div class="infinity-feature">
+            <div class="infinity-feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="infinity-feature-content">
+              <strong>Garantie à Vie</strong>
+              <span>Protection complète pendant toute la durée du contrat</span>
+            </div>
+          </div>
+          <div class="infinity-feature">
+            <div class="infinity-feature-icon purple" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M23 4v6h-6M1 20v-6h6" stroke="currentColor" stroke-width="2"/>
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="infinity-feature-content">
+              <strong>Upgrade 18 mois</strong>
+              <span>Changez d'appareil après 18 mois d'utilisation</span>
+            </div>
+          </div>
+          <div class="infinity-feature">
+            <div class="infinity-feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 18h.01" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="infinity-feature-content">
+              <strong>Assurance Casse</strong>
+              <span>Couverture contre les accidents incluse</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="infinity-price">
+          <span class="price-text">À partir de</span>
+          <span class="price-value">29€</span>
+          <span class="price-period">/mois</span>
+        </div>
+
+        <button class="btn-infinity">
+          <span class="infinity-icon">∞</span>
+          Découvrir les offres Infinity
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Shopping Teaser -->
+  <section class="live-section" aria-labelledby="live-title">
+    <div class="container">
+      <div class="live-content">
+        <div class="live-badge">
+          <span class="live-dot" aria-hidden="true">●</span>
+          <span>PROCHAINE SESSION LIVE</span>
+        </div>
+        <h2 id="live-title" class="live-title">Arrivage MacBook Pro M2</h2>
+        <p class="live-desc">
+          Rejoignez notre prochain live shopping et découvrez nos derniers arrivages en avant-première avec des offres exclusives.
+        </p>
+        <div class="live-timer" aria-label="Compte à rebours">
+          <div class="timer-block">
+            <span class="timer-value">02</span>
+            <span class="timer-label">Jours</span>
+          </div>
+          <span class="timer-sep" aria-hidden="true">:</span>
+          <div class="timer-block">
+            <span class="timer-value">14</span>
+            <span class="timer-label">Heures</span>
+          </div>
+          <span class="timer-sep" aria-hidden="true">:</span>
+          <div class="timer-block">
+            <span class="timer-value">32</span>
+            <span class="timer-label">Minutes</span>
+          </div>
+        </div>
+        <button class="btn-live">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2"/>
           </svg>
-        </a>
+          Me prévenir
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Bar - Reassurance avant achat -->
+  <section class="trust-bar" aria-label="Nos garanties">
+    <div class="container">
+      <div class="trust-items">
+        <div class="trust-item">
+          <div class="trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="trust-content">
+            <span class="trust-title">Garantie 24 mois</span>
+            <span class="trust-desc">Protection complète incluse</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="trust-content">
+            <span class="trust-title">Livraison Express</span>
+            <span class="trust-desc">48h chrono gratuit</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2"/>
+              <path d="M22 6l-10 7L2 6" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="trust-content">
+            <span class="trust-title">Retour Gratuit</span>
+            <span class="trust-desc">30 jours satisfait ou remboursé</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon eco" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="trust-content">
+            <span class="trust-title">Éco-Responsable</span>
+            <span class="trust-desc">70kg CO₂ économisés/produit</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>

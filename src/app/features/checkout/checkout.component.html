@@ -2,316 +2,350 @@
 
 <main class="checkout-page">
   <div class="container">
-    <!-- Page Header -->
-    <div class="page-header">
-      <h1 class="page-title">Finaliser ma commande</h1>
-      <div class="checkout-steps">
-        <div class="step" [class.active]="currentStep() === 'shipping'" [class.completed]="currentStep() !== 'shipping'">
-          <div class="step-number">1</div>
-          <span>Livraison</span>
-        </div>
-        <div class="step-line"></div>
-        <div class="step" [class.active]="currentStep() === 'payment'" [class.completed]="currentStep() === 'confirmation'">
-          <div class="step-number">2</div>
-          <span>Paiement</span>
-        </div>
-        <div class="step-line"></div>
-        <div class="step" [class.active]="currentStep() === 'confirmation'">
-          <div class="step-number">3</div>
-          <span>Confirmation</span>
-        </div>
+    <!-- Indicateur d'étapes -->
+    <div class="steps-indicator">
+      <div class="step" [class.active]="currentStep() >= 1" [class.completed]="currentStep() > 1">
+        <div class="step-number">1</div>
+        <div class="step-label">Livraison</div>
+      </div>
+      <div class="step-line" [class.active]="currentStep() >= 2"></div>
+      <div class="step" [class.active]="currentStep() >= 2" [class.completed]="currentStep() > 2">
+        <div class="step-number">2</div>
+        <div class="step-label">Paiement</div>
+      </div>
+      <div class="step-line" [class.active]="currentStep() >= 3"></div>
+      <div class="step" [class.active]="currentStep() >= 3">
+        <div class="step-number">3</div>
+        <div class="step-label">Confirmation</div>
       </div>
     </div>
 
-    @if (!orderCompleted()) {
-      <div class="checkout-content">
-        <!-- Main Content -->
-        <div class="checkout-main">
-          <!-- Step 1: Shipping -->
-          @if (currentStep() === 'shipping') {
-            <div class="checkout-section animate-slide-up">
-              <h2 class="section-title">Informations de livraison</h2>
-              
-              <form [formGroup]="shippingForm" class="checkout-form">
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label">Prénom*</label>
-                    <input type="text" class="form-input" formControlName="firstName" placeholder="Jean">
-                    @if (shippingForm.get('firstName')?.touched && shippingForm.get('firstName')?.invalid) {
-                      <span class="form-error">Le prénom est requis</span>
-                    }
-                  </div>
-                  
-                  <div class="form-group">
-                    <label class="form-label">Nom*</label>
-                    <input type="text" class="form-input" formControlName="lastName" placeholder="Dupont">
-                    @if (shippingForm.get('lastName')?.touched && shippingForm.get('lastName')?.invalid) {
-                      <span class="form-error">Le nom est requis</span>
-                    }
-                  </div>
-                </div>
+    <div class="checkout-content">
+      <!-- Étape 1: Adresse de livraison -->
+      @if (currentStep() === 1) {
+        <div class="step-content shipping-step animate-slide-in">
+          <h2 class="step-title">📦 Adresse de livraison</h2>
 
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label">Email*</label>
-                    <input type="email" class="form-input" formControlName="email" placeholder="jean.dupont@example.com">
-                    @if (shippingForm.get('email')?.touched && shippingForm.get('email')?.invalid) {
-                      <span class="form-error">Email valide requis</span>
+          <!-- Adresses sauvegardées -->
+          @if (savedAddresses().length > 0) {
+            <div class="saved-addresses">
+              <h3>Mes adresses</h3>
+              <div class="addresses-grid">
+                @for (address of savedAddresses(); track address.id) {
+                  <div 
+                    class="address-card" 
+                    [class.selected]="selectedAddressId() === address.id"
+                    (click)="selectAddress(address.id)">
+                    @if (address.isDefault) {
+                      <span class="default-badge">Par défaut</span>
+                    }
+                    <div class="address-name">{{ address.firstName }} {{ address.lastName }}</div>
+                    <div class="address-details">
+                      <p>{{ address.street }}</p>
+                      <p>{{ address.postalCode }} {{ address.city }}</p>
+                      <p>{{ address.country }}</p>
+                      <p class="phone">📞 {{ address.phone }}</p>
+                    </div>
+                    @if (selectedAddressId() === address.id) {
+                      <div class="selected-check">✓</div>
                     }
                   </div>
-                  
-                  <div class="form-group">
-                    <label class="form-label">Téléphone*</label>
-                    <input type="tel" class="form-input" formControlName="phone" placeholder="+33 6 12 34 56 78">
-                    @if (shippingForm.get('phone')?.touched && shippingForm.get('phone')?.invalid) {
-                      <span class="form-error">Le téléphone est requis</span>
-                    }
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Adresse*</label>
-                  <input type="text" class="form-input" formControlName="address" placeholder="12 rue de la République">
-                  @if (shippingForm.get('address')?.touched && shippingForm.get('address')?.invalid) {
-                    <span class="form-error">L'adresse est requise</span>
-                  }
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label">Ville*</label>
-                    <input type="text" class="form-input" formControlName="city" placeholder="Paris">
-                    @if (shippingForm.get('city')?.touched && shippingForm.get('city')?.invalid) {
-                      <span class="form-error">La ville est requise</span>
-                    }
-                  </div>
-                  
-                  <div class="form-group">
-                    <label class="form-label">Code postal*</label>
-                    <input type="text" class="form-input" formControlName="postalCode" placeholder="75001">
-                    @if (shippingForm.get('postalCode')?.touched && shippingForm.get('postalCode')?.invalid) {
-                      <span class="form-error">Le code postal est requis</span>
-                    }
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Pays*</label>
-                    <select class="form-select" formControlName="country">
-                      <option value="France">France</option>
-                      <option value="Belgique">Belgique</option>
-                      <option value="Suisse">Suisse</option>
-                      <option value="Luxembourg">Luxembourg</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-actions">
-                  <button type="button" class="btn btn-secondary" routerLink="/cart">
-                    Retour au panier
-                  </button>
-                  <button type="button" class="btn btn-primary btn-lg" (click)="goToStep('payment')">
-                    Continuer vers le paiement
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                  </button>
-                </div>
-              </form>
+                }
+              </div>
             </div>
           }
 
-          <!-- Step 2: Payment -->
-          @if (currentStep() === 'payment') {
-            <div class="checkout-section animate-slide-up">
-              <h2 class="section-title">Paiement sécurisé</h2>
-              
-              <div class="security-badge">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2"/>
-                  <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <span>Vos informations sont protégées et cryptées</span>
+          <!-- Bouton ajouter nouvelle adresse -->
+          <button 
+            type="button" 
+            class="btn-add-address" 
+            (click)="toggleNewAddressForm()">
+            {{ showNewAddressForm() ? '← Retour aux adresses' : '+ Ajouter une nouvelle adresse' }}
+          </button>
+
+          <!-- Formulaire nouvelle adresse -->
+          @if (showNewAddressForm()) {
+            <form [formGroup]="newAddressForm" class="new-address-form animate-fade-in">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName">Prénom *</label>
+                  <input 
+                    id="firstName" 
+                    type="text" 
+                    formControlName="firstName" 
+                    placeholder="Prénom"
+                    [class.error]="newAddressForm.get('firstName')?.touched && newAddressForm.get('firstName')?.invalid">
+                </div>
+                <div class="form-group">
+                  <label for="lastName">Nom *</label>
+                  <input 
+                    id="lastName" 
+                    type="text" 
+                    formControlName="lastName" 
+                    placeholder="Nom"
+                    [class.error]="newAddressForm.get('lastName')?.touched && newAddressForm.get('lastName')?.invalid">
+                </div>
               </div>
 
-              <form [formGroup]="paymentForm" class="checkout-form">
+              <div class="form-group">
+                <label for="phone">Téléphone *</label>
+                <input 
+                  id="phone" 
+                  type="tel" 
+                  formControlName="phone" 
+                  placeholder="+33 6 12 34 56 78"
+                  [class.error]="newAddressForm.get('phone')?.touched && newAddressForm.get('phone')?.invalid">
+              </div>
+
+              <div class="form-group">
+                <label for="street">Adresse *</label>
+                <input 
+                  id="street" 
+                  type="text" 
+                  formControlName="street" 
+                  placeholder="123 Rue de la Paix"
+                  [class.error]="newAddressForm.get('street')?.touched && newAddressForm.get('street')?.invalid">
+              </div>
+
+              <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label">Numéro de carte*</label>
+                  <label for="postalCode">Code postal *</label>
                   <input 
+                    id="postalCode" 
                     type="text" 
-                    class="form-input card-input" 
-                    formControlName="cardNumber" 
-                    placeholder="1234 5678 9012 3456"
-                    maxlength="16">
-                  @if (paymentForm.get('cardNumber')?.touched && paymentForm.get('cardNumber')?.invalid) {
-                    <span class="form-error">Numéro de carte invalide (16 chiffres)</span>
-                  }
+                    formControlName="postalCode" 
+                    placeholder="75001"
+                    [class.error]="newAddressForm.get('postalCode')?.touched && newAddressForm.get('postalCode')?.invalid">
                 </div>
-
                 <div class="form-group">
-                  <label class="form-label">Nom sur la carte*</label>
-                  <input type="text" class="form-input" formControlName="cardName" placeholder="JEAN DUPONT">
-                  @if (paymentForm.get('cardName')?.touched && paymentForm.get('cardName')?.invalid) {
-                    <span class="form-error">Le nom est requis</span>
-                  }
+                  <label for="city">Ville *</label>
+                  <input 
+                    id="city" 
+                    type="text" 
+                    formControlName="city" 
+                    placeholder="Paris"
+                    [class.error]="newAddressForm.get('city')?.touched && newAddressForm.get('city')?.invalid">
                 </div>
+              </div>
 
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label">Date d'expiration*</label>
-                    <input type="text" class="form-input" formControlName="expiryDate" placeholder="MM/AA" maxlength="5">
-                    @if (paymentForm.get('expiryDate')?.touched && paymentForm.get('expiryDate')?.invalid) {
-                      <span class="form-error">Format MM/AA requis</span>
-                    }
-                  </div>
-                  
-                  <div class="form-group">
-                    <label class="form-label">CVV*</label>
-                    <input type="text" class="form-input" formControlName="cvv" placeholder="123" maxlength="4">
-                    @if (paymentForm.get('cvv')?.touched && paymentForm.get('cvv')?.invalid) {
-                      <span class="form-error">CVV invalide</span>
-                    }
-                  </div>
-                </div>
+              <div class="form-group">
+                <label for="country">Pays *</label>
+                <input 
+                  id="country" 
+                  type="text" 
+                  formControlName="country" 
+                  placeholder="France"
+                  [class.error]="newAddressForm.get('country')?.touched && newAddressForm.get('country')?.invalid">
+              </div>
 
-                <div class="payment-note">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                    <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                  <p>Ceci est une démonstration. Aucun paiement réel ne sera effectué.</p>
-                </div>
+              <div class="form-group checkbox-group">
+                <label>
+                  <input type="checkbox" formControlName="isDefault">
+                  <span>Définir comme adresse par défaut</span>
+                </label>
+              </div>
 
-                <div class="form-actions">
-                  <button type="button" class="btn btn-secondary" (click)="goToStep('shipping')">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    Retour
-                  </button>
-                  <button 
-                    type="button" 
-                    class="btn btn-primary btn-lg" 
-                    (click)="submitOrder()"
-                    [disabled]="isProcessing()">
-                    @if (isProcessing()) {
-                      <span class="spinner"></span>
-                      <span>Traitement...</span>
-                    } @else {
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      </svg>
-                      <span>Confirmer et payer {{ cartSummary().total | number:'1.2-2' }} €</span>
-                    }
-                  </button>
-                </div>
-              </form>
-            </div>
+              <button 
+                type="button" 
+                class="btn-save-address" 
+                (click)="saveNewAddress()"
+                [disabled]="newAddressForm.invalid">
+                Enregistrer cette adresse
+              </button>
+            </form>
           }
-        </div>
 
-        <!-- Order Summary Sidebar -->
-        <div class="order-summary-sidebar">
-          <div class="summary-card">
-            <h3 class="summary-title">Récapitulatif</h3>
-            
-            <div class="summary-items">
-              @for (item of cartSummary().items; track item.id) {
-                <div class="summary-item">
-                  <div class="item-info">
-                    <div class="item-name">{{ item.productTitle }}</div>
-                    <div class="item-qty">Qté: {{ item.quantity }}</div>
-                  </div>
-                  <div class="item-price">{{ item.price * item.quantity | number:'1.2-2' }} €</div>
-                </div>
+          <div class="step-actions">
+            <button type="button" class="btn-next" (click)="goToStep(2)">
+              Continuer vers le paiement →
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Étape 2: Paiement -->
+      @if (currentStep() === 2) {
+        <div class="step-content payment-step animate-slide-in">
+          <h2 class="step-title">💳 Mode de paiement</h2>
+
+          <!-- Sélection du mode de paiement -->
+          <div class="payment-methods">
+            <div 
+              class="payment-method" 
+              [class.selected]="paymentMethod() === 'card'"
+              (click)="selectPaymentMethod('card')">
+              <div class="method-icon">💳</div>
+              <div class="method-info">
+                <div class="method-name">Carte bancaire</div>
+                <div class="method-desc">Visa, Mastercard, Amex</div>
+              </div>
+              @if (paymentMethod() === 'card') {
+                <div class="selected-check">✓</div>
               }
             </div>
 
-            <div class="summary-totals">
-              <div class="summary-row">
-                <span>Sous-total</span>
-                <span>{{ cartSummary().subtotal | number:'1.2-2' }} €</span>
+            <div 
+              class="payment-method disabled"
+              [class.selected]="paymentMethod() === 'paypal'"
+              (click)="selectPaymentMethod('paypal')">
+              <div class="method-icon">🅿️</div>
+              <div class="method-info">
+                <div class="method-name">PayPal</div>
+                <div class="method-desc">Bientôt disponible</div>
               </div>
-              <div class="summary-row">
-                <span>Livraison</span>
-                <span class="text-success">Gratuite</span>
+              @if (paymentMethod() === 'paypal') {
+                <div class="selected-check">✓</div>
+              }
+            </div>
+
+            <div 
+              class="payment-method disabled"
+              [class.selected]="paymentMethod() === 'bank-transfer'"
+              (click)="selectPaymentMethod('bank-transfer')">
+              <div class="method-icon">🏦</div>
+              <div class="method-info">
+                <div class="method-name">Virement bancaire</div>
+                <div class="method-desc">Bientôt disponible</div>
               </div>
-              <div class="summary-divider"></div>
-              <div class="summary-row summary-total">
-                <span>Total</span>
-                <span>{{ cartSummary().total | number:'1.2-2' }} €</span>
-              </div>
+              @if (paymentMethod() === 'bank-transfer') {
+                <div class="selected-check">✓</div>
+              }
             </div>
           </div>
 
-          <div class="trust-badges">
-            <div class="badge-item">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              <span>Paiement sécurisé</span>
-            </div>
-            <div class="badge-item">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M21 10H3M21 6H3M21 14H3M21 18H3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-              <span>Livraison gratuite</span>
-            </div>
-            <div class="badge-item">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2"/>
-                <path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              <span>Retour 14 jours</span>
-            </div>
+          <!-- Formulaire de paiement Stripe -->
+          @if (paymentMethod() === 'card') {
+            <form [formGroup]="paymentForm" class="payment-form animate-fade-in">
+              <div class="form-group">
+                <label for="cardholderName">Nom sur la carte *</label>
+                <input 
+                  id="cardholderName" 
+                  type="text" 
+                  formControlName="cardholderName" 
+                  placeholder="Jean Dupont"
+                  [class.error]="paymentForm.get('cardholderName')?.touched && paymentForm.get('cardholderName')?.invalid">
+              </div>
+
+              <div class="form-group">
+                <label>Informations de la carte *</label>
+                <div #stripeCard class="stripe-card-element" id="card-element"></div>
+              </div>
+
+              <div class="secure-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>Paiement 100% sécurisé avec Stripe</span>
+              </div>
+            </form>
+          }
+
+          <div class="step-actions">
+            <button type="button" class="btn-back" (click)="goToStep(1)">
+              ← Retour
+            </button>
+            <button 
+              type="button" 
+              class="btn-next" 
+              (click)="submitOrder()"
+              [disabled]="isProcessing() || (paymentMethod() === 'card' && !stripeReady())">
+              @if (isProcessing()) {
+                <span class="spinner"></span>
+                Traitement...
+              } @else {
+                Confirmer le paiement ({{ cartSummary().total }}€)
+              }
+            </button>
           </div>
         </div>
-      </div>
-    } @else {
-      <!-- Confirmation Step -->
-      <div class="confirmation-section animate-fade-in">
-        <div class="success-icon">
-          <svg viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-            <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
+      }
+
+      <!-- Étape 3: Confirmation -->
+      @if (currentStep() === 3) {
+        <div class="step-content confirmation-step animate-scale-in">
+          <div class="success-animation">
+            <div class="checkmark-circle">
+              <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle-path" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+              </svg>
+            </div>
+          </div>
+
+          <h2 class="confirmation-title">🎉 Commande confirmée !</h2>
+          <p class="confirmation-message">
+            Merci pour votre achat ! Votre commande a été traitée avec succès.
+          </p>
+
+          <div class="order-info">
+            <div class="order-number">
+              <span class="label">Numéro de commande :</span>
+              <span class="value">{{ orderNumber() }}</span>
+            </div>
+            <p class="confirmation-email">
+              Un email de confirmation a été envoyé à <strong>{{ currentUser()?.email }}</strong>
+            </p>
+          </div>
+
+          <div class="confirmation-actions">
+            <button type="button" class="btn-primary" (click)="viewOrders()">
+              Voir mes commandes
+            </button>
+            <button type="button" class="btn-secondary" (click)="continueShopping()">
+              Continuer mes achats
+            </button>
+          </div>
         </div>
+      }
+
+      <!-- Récapitulatif du panier (sidebar) -->
+      <aside class="order-summary">
+        <h3>Récapitulatif de commande</h3>
         
-        <h2 class="confirmation-title">Commande confirmée !</h2>
-        <p class="confirmation-text">
-          Votre commande <strong>#{{ orderNumber() }}</strong> a été enregistrée avec succès.
-          <br>
-          Vous recevrez un email de confirmation à l'adresse <strong>{{ shippingForm.value.email }}</strong>
-        </p>
-
-        <div class="confirmation-actions">
-          <button class="btn btn-primary btn-lg" (click)="viewOrders()">
-            Voir mes commandes
-          </button>
-          <button class="btn btn-secondary" (click)="continueShopping()">
-            Continuer mes achats
-          </button>
+        <div class="summary-items">
+          @for (item of cartSummary().items; track item.id) {
+            <div class="summary-item">
+              <img [src]="item.productImage || 'assets/placeholder.jpg'" [alt]="item.productTitle">
+              <div class="item-info">
+                <div class="item-name">{{ item.productTitle }}</div>
+                <div class="item-quantity">Qté: {{ item.quantity }}</div>
+              </div>
+              <div class="item-price">{{ item.price * item.quantity }}€</div>
+            </div>
+          }
         </div>
 
-        <div class="order-details-card">
-          <h3>Détails de la commande</h3>
-          <div class="detail-row">
-            <span>Montant total</span>
-            <strong>{{ cartSummary().total | number:'1.2-2' }} €</strong>
-          </div>
-          <div class="detail-row">
-            <span>Livraison estimée</span>
-            <strong>3-5 jours ouvrés</strong>
-          </div>
-          <div class="detail-row">
-            <span>Adresse de livraison</span>
-            <span>
-              {{ shippingForm.value.address }}<br>
-              {{ shippingForm.value.postalCode }} {{ shippingForm.value.city }}
-            </span>
-          </div>
+        <div class="summary-divider"></div>
+
+        <div class="summary-row">
+          <span>Sous-total</span>
+          <span>{{ cartSummary().subtotal }}€</span>
         </div>
-      </div>
-    }
+
+        <div class="summary-row">
+          <span>Livraison</span>
+          <span class="free-shipping">Gratuite</span>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-total">
+          <span>Total</span>
+          <span class="total-amount">{{ cartSummary().total }}€</span>
+        </div>
+
+        <!-- Adresse de livraison sélectionnée -->
+        @if (currentStep() >= 2 && selectedAddress()) {
+          <div class="selected-shipping-address">
+            <h4>📍 Livraison à :</h4>
+            <p class="address-line">{{ selectedAddress()!.firstName }} {{ selectedAddress()!.lastName }}</p>
+            <p class="address-line">{{ selectedAddress()!.street }}</p>
+            <p class="address-line">{{ selectedAddress()!.postalCode }} {{ selectedAddress()!.city }}</p>
+            <p class="address-line">{{ selectedAddress()!.country }}</p>
+          </div>
+        }
+      </aside>
+    </div>
   </div>
 </main>
 

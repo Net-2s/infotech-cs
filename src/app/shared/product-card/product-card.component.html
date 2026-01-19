@@ -1,7 +1,7 @@
 <a [routerLink]="['/products', product.id]" class="product-card">
   <!-- Image -->
   <div class="product-image">
-    <img [src]="getProductImage()" [alt]="product.title" loading="lazy">
+    <img [src]="getProductImage()" [alt]="product.title" loading="lazy" appImageFallback>
     
     <!-- Favorite Button -->
     @if (authService.isAuthenticated()) {

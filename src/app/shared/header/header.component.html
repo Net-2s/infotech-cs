@@ -23,6 +23,33 @@
 
     <!-- Actions -->
     <div class="header-actions">
+      <!-- Theme Toggle -->
+      <button 
+        class="theme-toggle" 
+        (click)="toggleTheme()" 
+        [attr.aria-label]="themeService.isDark() ? 'Passer au thème clair' : 'Passer au thème sombre'"
+        title="{{ themeService.isDark() ? 'Mode clair' : 'Mode sombre' }}">
+        @if (themeService.isDark()) {
+          <!-- Sun icon for dark mode (click to switch to light) -->
+          <svg class="theme-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        } @else {
+          <!-- Moon icon for light mode (click to switch to dark) -->
+          <svg class="theme-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        }
+      </button>
+
       <!-- Cart -->
       <a routerLink="/cart" class="cart-button">
         <svg class="cart-icon" viewBox="0 0 24 24" fill="none">
@@ -105,5 +132,21 @@
       <a routerLink="/auth/login" class="mobile-menu-item" (click)="toggleMenu()">Connexion</a>
       <a routerLink="/auth/register" class="mobile-menu-item" (click)="toggleMenu()">Inscription</a>
     }
+    <hr class="mobile-divider">
+    <button class="mobile-menu-item theme-mobile" (click)="toggleTheme()">
+      @if (themeService.isDark()) {
+        <svg class="mobile-icon" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+          <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Mode clair
+      } @else {
+        <svg class="mobile-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Mode sombre
+      }
+    </button>
   </div>
 </header>

@@ -2,10 +2,10 @@
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-elevated);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
 
   &-container {
     display: flex;
@@ -40,11 +40,11 @@
   &-icon {
     width: 32px;
     height: 32px;
-    color: var(--primary-600);
+    color: var(--accent-green);
   }
 
   &-text {
-    background: linear-gradient(135deg, var(--primary-600), var(--accent-600));
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -74,8 +74,8 @@
     transition: all var(--transition-base);
 
     &:hover, &.active {
-      color: var(--primary-600);
-      background: var(--primary-50);
+      color: var(--accent-green);
+      background: rgba(0, 212, 126, 0.1);
     }
   }
 
@@ -97,8 +97,8 @@
   transition: all var(--transition-base);
 
   &:hover {
-    color: var(--primary-600);
-    background: var(--primary-50);
+    color: var(--accent-green);
+    background: rgba(0, 212, 126, 0.1);
   }
 }
 
@@ -118,8 +118,8 @@
     min-width: 18px;
     height: 18px;
     padding: 0 4px;
-    background: var(--primary-600);
-    color: white;
+    background: var(--accent-green);
+    color: var(--bg-primary);
     font-size: 10px;
     font-weight: var(--font-weight-bold);
     border-radius: var(--border-radius-full);
@@ -144,7 +144,8 @@
     transition: all var(--transition-base);
 
     &:hover {
-      background: var(--bg-secondary);
+      background: var(--bg-tertiary);
+      border-color: var(--accent-green);
     }
 
     @media (max-width: 768px) {
@@ -169,7 +170,7 @@
     top: calc(100% + 8px);
     right: 0;
     min-width: 220px;
-    background: white;
+    background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-lg);
@@ -201,7 +202,7 @@
     transition: background var(--transition-fast);
 
     &:hover {
-      background: var(--bg-secondary);
+      background: var(--bg-tertiary);
     }
 
     &:first-child {
@@ -227,6 +228,16 @@
 }
 
 .mobile-menu {
+  display: none;
+  flex-direction: column;
+  padding: var(--spacing-md) 0;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  
+  & {
+    animation: slideDown var(--transition-base);
+  }
+
   &-toggle {
     display: flex;
     align-items: center;
@@ -246,15 +257,6 @@
     @media (min-width: 768px) {
       display: none;
     }
-  }
-
-  display: none;
-  flex-direction: column;
-  padding: var(--spacing-md) 0;
-  border-top: 1px solid var(--border-color);
-  
-  & {
-    animation: slideDown var(--transition-base);
   }
 
   &.active {
@@ -279,8 +281,43 @@
     transition: background var(--transition-fast);
 
     &:hover {
-      background: var(--bg-secondary);
+      background: var(--bg-tertiary);
     }
+  }
+}
+
+// Auth buttons
+.btn-login {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  
+  &:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-green);
+  }
+}
+
+.btn-register {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--accent-green);
+  border: none;
+  border-radius: var(--border-radius-md);
+  color: var(--bg-primary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  
+  &:hover {
+    background: var(--accent-green-light);
+    transform: translateY(-1px);
   }
 }
 
@@ -292,5 +329,60 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// Theme Toggle Button
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+
+  &:hover {
+    color: var(--accent-green);
+    border-color: var(--accent-green);
+    background: rgba(0, 212, 126, 0.1);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 212, 126, 0.5);
+  }
+
+  .theme-icon {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover .theme-icon {
+    transform: rotate(15deg);
+  }
+}
+
+// Mobile divider
+.mobile-divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: var(--spacing-sm) 0;
+}
+
+// Theme toggle in mobile menu
+.theme-mobile {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  
+  .mobile-icon {
+    width: 20px;
+    height: 20px;
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { CartItem, CartSummary } from '../models/cart.model';
+import { CartItem, CartSummary, SelectedInsurance, DEFAULT_INSURANCE_OPTIONS } from '../models/cart.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -12,20 +12,36 @@ export class CartService {
 
   private cartItems = signal<CartItem[]>([]);
   
+  // Options d'assurance disponibles
+  readonly insuranceOptions = DEFAULT_INSURANCE_OPTIONS;
+  
   cartSummary = computed<CartSummary>(() => {
     const items = this.cartItems();
     const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const insuranceTotal = items.reduce((sum, item) => {
+      if (item.insurance) {
+        return sum + item.insurance.price;
+      }
+      return sum;
+    }, 0);
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
     
     return {
       items,
       subtotal,
-      total: subtotal, // Peut être modifié pour inclure taxes, frais de port, etc.
+      insuranceTotal,
+      shippingTotal: 0, // Livraison gratuite pour l'instant
+      total: subtotal + insuranceTotal,
       itemCount
     };
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Écouter l'événement de déconnexion pour vider le panier
+    window.addEventListener('user-logout', () => {
+      this.cartItems.set([]);
+    });
+  }
 
   loadCart(): Observable<CartItem[]> {
     return this.http.get<CartItem[]>(this.API_URL)
@@ -51,6 +67,33 @@ export class CartService {
   clearCart(): Observable<void> {
     return this.http.delete<void>(this.API_URL)
       .pipe(tap(() => this.cartItems.set([])));
+  }
+
+  /**
+   * Ajoute ou met à jour l'assurance pour un article du panier
+   */
+  setItemInsurance(cartItemId: number, insurance: SelectedInsurance | null): void {
+    const items = this.cartItems();
+    const updatedItems = items.map(item => {
+      if (item.id === cartItemId) {
+        return {
+          ...item,
+          insurance: insurance ?? undefined
+        };
+      }
+      return item;
+    });
+    this.cartItems.set(updatedItems);
+    
+    // Optionnel: Persister côté serveur
+    // this.http.put(`${this.API_URL}/${cartItemId}/insurance`, { insurance }).subscribe();
+  }
+
+  /**
+   * Supprime l'assurance d'un article du panier
+   */
+  removeItemInsurance(cartItemId: number): void {
+    this.setItemInsurance(cartItemId, null);
   }
 
   getCartItems() {

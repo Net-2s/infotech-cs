@@ -1,0 +1,83 @@
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>✍️ Laisser un avis</h2>
+      <button class="close-btn" (click)="closeModal()" type="button">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="product-info">
+        <p class="product-title">{{ productTitle }}</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()">
+        <!-- Note -->
+        <div class="form-group">
+          <label>Votre note *</label>
+          <app-star-rating
+            [rating]="rating()"
+            [interactive]="true"
+            (ratingChange)="onRatingChange($event)">
+          </app-star-rating>
+          <p class="rating-text">
+            @switch(rating()) {
+              @case(1) { Très décevant }
+              @case(2) { Décevant }
+              @case(3) { Correct }
+              @case(4) { Bien }
+              @case(5) { Excellent ! }
+            }
+          </p>
+        </div>
+
+        <!-- Titre (optionnel) -->
+        <div class="form-group">
+          <label>Titre de votre avis (optionnel)</label>
+          <input
+            type="text"
+            class="form-input"
+            [(ngModel)]="title"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Ex: Très bon produit !"
+            maxlength="100">
+        </div>
+
+        <!-- Commentaire -->
+        <div class="form-group">
+          <label>Votre commentaire *</label>
+          <textarea
+            class="form-input"
+            rows="5"
+            [(ngModel)]="comment"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Partagez votre expérience avec ce produit..."
+            maxlength="1000"
+            required></textarea>
+          <small class="char-count">{{ comment().length }} / 1000 caractères</small>
+        </div>
+
+        <!-- Boutons -->
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="closeModal()"
+            [disabled]="isSubmitting()">
+            Annuler
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isSubmitting() || !comment().trim()">
+            @if (isSubmitting()) {
+              <span class="spinner"></span>
+              Publication...
+            } @else {
+              Publier mon avis
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

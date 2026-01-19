@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
   padding: var(--spacing-2xl) var(--spacing-md);
 }
 
@@ -14,11 +14,12 @@
   }
 
   &-card {
-    background: white;
+    background: var(--bg-secondary);
     border-radius: var(--border-radius-xl);
     box-shadow: var(--shadow-xl);
     padding: var(--spacing-3xl);
     animation: slideUp var(--transition-base);
+    border: 1px solid var(--border-color);
   }
 
   &-header {
@@ -52,14 +53,20 @@
   }
 
   &-link {
-    color: var(--primary-600);
+    color: var(--accent-green);
     font-weight: var(--font-weight-medium);
     text-decoration: none;
     transition: color var(--transition-fast);
 
     &:hover {
-      color: var(--primary-700);
+      color: var(--accent-green-light);
       text-decoration: underline;
+    }
+    
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 212, 126, 0.5);
+      border-radius: 4px;
     }
   }
 }
@@ -74,7 +81,8 @@
   font-size: var(--font-size-sm);
 
   &-error {
-    background: var(--error);
-    color: white;
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.3);
   }
 }
