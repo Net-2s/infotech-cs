@@ -1,144 +1,202 @@
+/**
+ * Modèle pour le Passeport Numérique d'un produit
+ * Contient toutes les informations environnementales et de traçabilité
+ */
+
 export interface DigitalPassport {
   id: number;
   productId: number;
+  
+  // Impact Environnemental
   carbonFootprint: CarbonFootprint;
+  
+  // Traçabilité
   traceability: Traceability;
+  
+  // Composition & Matériaux
   materials: Material[];
+  
+  // Durabilité & Réparation
   durability: Durability;
+  
+  // Certifications
   certifications: Certification[];
-  recyclingInfo: RecyclingInfo;
+  
+  // Informations de recyclage
+  recycling: RecyclingInfo;
+  
+  // Métadonnées
   createdAt: string;
   updatedAt: string;
 }
 
+/**
+ * Empreinte carbone du produit
+ */
 export interface CarbonFootprint {
-  id: number;
+  // Total en kg CO2
   totalCO2: number;
-  manufacturing: number;
-  transportation: number;
-  usage: number;
-  endOfLife: number;
-  score: string;
+  
+  // Détail par phase
+  manufacturing: number;      // Fabrication
+  transportation: number;     // Transport
+  usage: number;             // Utilisation (estimée sur 3 ans)
+  endOfLife: number;         // Fin de vie
+  
+  // Comparaison
+  equivalentKmCar: number;   // Équivalent en km de voiture
+  equivalentTreesYear: number; // Arbres nécessaires pour compenser (1 an)
+  
+  // Score (A-E)
+  score: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 
+/**
+ * Traçabilité du produit
+ */
 export interface Traceability {
-  id: number;
-  originCountry: string;
+  // Origine
+  countryOfOrigin: string;
+  manufactureDate: string;
   manufacturer: string;
-  factory: string | null;
-  supplyChainJourney: string[];
-  transparencyScore: number;
+  factoryLocation: string;
+  
+  // Parcours
+  journey: JourneyStep[];
+  
+  // Chaîne d'approvisionnement
+  supplyChainTransparency: number; // 0-100%
 }
 
+export interface JourneyStep {
+  location: string;
+  date: string;
+  type: 'manufacturing' | 'assembly' | 'quality-check' | 'shipping' | 'warehouse' | 'retail';
+  description: string;
+}
+
+/**
+ * Matériaux composant le produit
+ */
 export interface Material {
-  id: number;
   name: string;
-  percentage: number;
-  renewable: boolean;
-  recycled: boolean;
-  recyclable: boolean;
-  origin: string;
+  percentage: number;        // % du produit total
+  renewable: boolean;        // Renouvelable ou non
+  recycled: boolean;         // Contient du recyclé
+  recyclable: boolean;       // Recyclable en fin de vie
+  origin: string;           // Provenance
 }
 
+/**
+ * Informations de durabilité
+ */
 export interface Durability {
-  id: number;
-  expectedLifespanYears: number | null;
-  repairabilityScore: number;
-  repairabilityIndex: number | null;
+  // Durée de vie estimée
+  expectedLifespan: number;  // En années
+  
+  // Réparabilité
+  repairabilityScore: number; // 0-10
+  repairabilityIndex: 'A' | 'B' | 'C' | 'D' | 'E';
+  
+  // Pièces détachées
   sparePartsAvailable: boolean;
-  warrantyYears: number | null;
-  softwareUpdates: boolean | null;
+  sparePartsAvailabilityYears: number;
+  
+  // Garantie
+  warrantyYears: number;
+  extendedWarrantyAvailable: boolean;
+  
+  // Mise à jour
+  softwareUpdatesYears: number; // Pour électronique
 }
 
+/**
+ * Certifications du produit
+ */
 export interface Certification {
-  id: number;
   name: string;
   issuer: string;
   validUntil: string;
-  logoUrl: string | null;
-  verificationUrl: string | null;
-  type: string;
+  logoUrl: string;
+  verificationUrl: string;
+  type: 'environmental' | 'social' | 'quality' | 'safety' | 'other';
 }
 
+/**
+ * Informations de recyclage
+ */
 export interface RecyclingInfo {
-  id: number;
-  recyclablePercentage: number;
+  recyclable: boolean;
+  recyclablePercentage: number; // % du produit recyclable
+  
+  // Instructions
   instructions: string;
-  takeBackProgram: boolean;
+  
+  // Points de collecte
   collectionPoints: CollectionPoint[];
+  
+  // Programme de reprise
+  takeBackProgram: boolean;
+  takeBackProgramDetails: string;
 }
 
 export interface CollectionPoint {
-  id: number;
   name: string;
   address: string;
-  distance: string | null;
+  distance: number; // km
   acceptedMaterials: string[];
 }
 
+/**
+ * DTO pour créer/modifier un passeport numérique
+ */
 export interface CreateDigitalPassportRequest {
   productId: number;
-  carbonFootprint: CarbonFootprintDto;
-  traceability: TraceabilityDto;
-  materials: MaterialDto[];
-  durability: DurabilityDto;
-  certifications: CertificationDto[];
-  recyclingInfo: RecyclingInfoDto;
-}
-
-export interface CarbonFootprintDto {
-  totalCO2: number;
-  manufacturing: number;
-  transportation: number;
-  usage: number;
-  endOfLife: number;
-}
-
-export interface TraceabilityDto {
-  originCountry: string;
+  
+  // Impact carbone
+  carbonFootprint: {
+    manufacturing: number;
+    transportation: number;
+    usage: number;
+    endOfLife: number;
+  };
+  
+  // Traçabilité
+  countryOfOrigin: string;
+  manufactureDate: string;
   manufacturer: string;
-  factory: string | null;
-  supplyChainJourney: string[];
-  transparencyScore: number;
-}
-
-export interface MaterialDto {
-  name: string;
-  percentage: number;
-  renewable: boolean;
-  recycled: boolean;
-  recyclable: boolean;
-  origin: string;
-}
-
-export interface DurabilityDto {
-  expectedLifespanYears: number | null;
+  factoryLocation: string;
+  
+  // Matériaux
+  materials: {
+    name: string;
+    percentage: number;
+    renewable: boolean;
+    recycled: boolean;
+    recyclable: boolean;
+    origin: string;
+  }[];
+  
+  // Durabilité
+  expectedLifespan: number;
   repairabilityScore: number;
-  repairabilityIndex: number | null;
-  sparePartsAvailable: boolean;
-  warrantyYears: number | null;
-  softwareUpdates: boolean | null;
-}
-
-export interface CertificationDto {
-  name: string;
-  issuer: string;
-  validUntil: string;
-  logoUrl: string | null;
-  verificationUrl: string | null;
-  type: string;
-}
-
-export interface RecyclingInfoDto {
+  sparePartsAvailabilityYears: number;
+  warrantyYears: number;
+  softwareUpdatesYears?: number;
+  
+  // Certifications
+  certifications?: {
+    name: string;
+    issuer: string;
+    validUntil: string;
+    logoUrl: string;
+    verificationUrl: string;
+    type: string;
+  }[];
+  
+  // Recyclage
   recyclablePercentage: number;
-  instructions: string;
+  recyclingInstructions: string;
   takeBackProgram: boolean;
-  collectionPoints: CollectionPointDto[];
-}
-
-export interface CollectionPointDto {
-  name: string;
-  address: string;
-  distance: string | null;
-  acceptedMaterials: string[];
+  takeBackProgramDetails?: string;
 }
