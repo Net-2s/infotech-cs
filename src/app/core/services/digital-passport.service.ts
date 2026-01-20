@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DigitalPassport, CreateDigitalPassportRequest } from '../models/digital-passport-backend.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DigitalPassportService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/digital-passports';
+  private apiUrl = `${environment.apiUrl}/digital-passports`;
 
   /**
    * Récupère le passeport numérique d'un produit

@@ -15,7 +15,7 @@ export interface EmailData {
 })
 export class EmailService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/emails';
+  private apiUrl = `${environment.apiUrl}/emails`;
 
   /**
    * Envoie un email de confirmation de commande
